@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>StandFade</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg: #0b0b0f;
+      --card: #14141c;
+      --card2: #1c1c28;
+      --accent: #e91e8c;
+      --accent2: #ff2d9b;
+      --text: #ffffff;
+      --muted: #8b8b9e;
+      --green: #22c55e;
+      --red: #ef4444;
+      --gold: #fbbf24;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 90px;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(180deg, #1a1020 0%, var(--bg) 100%);
+      padding: 20px 16px 16px;
+      border-bottom: 1px solid #1f1f2e;
+    }
+    .user-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .avatar {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #7c3aed);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; font-weight: 700;
+      border: 2px solid var(--accent);
+      flex-shrink: 0;
+    }
+    .user-info { flex: 1; min-width: 0; }
+    .nickname {
+      font-size: 20px; font-weight: 700;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .game-id { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    .elo-block { text-align: right; }
+    .elo-value {
+      font-size: 26px; font-weight: 800;
+      background: linear-gradient(90deg, var(--accent), #a855f7);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .level-badge {
+      font-size: 12px; color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* Stats */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      padding: 14px 16px;
+    }
+    .stat {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 12px 6px;
+      text-align: center;
+      border: 1px solid #1f1f2e;
+    }
+    .stat .val { font-size: 17px; font-weight: 700; }
+    .stat .lbl { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* Sections */
+    .section { padding: 0 16px 20px; }
+    .section-title {
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 10px;
+      border: 1px solid #1f1f2e;
+    }
+    .card-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      background: var(--card);
+      border-radius: 16px;
+      margin-bottom: 8px;
+      border: 1px solid #1f1f2e;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .card-btn:active { background: var(--card2); }
+    .card-btn .icon {
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), #7c3aed);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .card-btn .text { flex: 1; }
+    .card-btn .title { font-weight: 600; font-size: 15px; }
+    .card-btn .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .card-btn .arrow { color: var(--muted); font-size: 18px; }
+
+    /* Top list */
+    .top-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid #1f1f2e;
+    }
+    .top-item:last-child { border-bottom: none; }
+    .rank {
+      width: 28px; text-align: center;
+      font-weight: 800; font-size: 15px; color: var(--muted);
+    }
+    .rank.g { color: var(--gold); }
+    .rank.s { color: #c0c0c0; }
+    .rank.b { color: #cd7f32; }
+    .top-name { flex: 1; font-weight: 600; }
+    .top-elo { font-weight: 700; color: var(--accent); }
+
+    /* History */
+    .hist-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #1f1f2e;
+    }
+    .hist-item:last-child { border-bottom: none; }
+    .hist-map { font-weight: 600; }
+    .hist-change.pos { color: var(--green); }
+    .hist-change.neg { color: var(--red); }
+
+    /* Shop */
+    .shop-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #1f1f2e;
+    }
+    .shop-item:last-child { border-bottom: none; }
+    .shop-name { font-weight: 600; }
+    .shop-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .shop-price {
+      background: rgba(233,30,140,0.15);
+      color: var(--accent);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    /* Nav */
+    .nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #0f0f16;
+      border-top: 1px solid #1f1f2e;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+      z-index: 100;
+    }
+    .nav button {
+      background: none; border: none;
+      color: var(--muted);
+      font-size: 10px;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 4px;
+      min-width: 60px;
+    }
+    .nav button.active { color: var(--accent); }
+    .nav .ico { font-size: 22px; line-height: 1; }
+
+    .hidden { display: none !important; }
+    .loading { text-align: center; color: var(--muted); padding: 30px; }
+    .empty { text-align: center; color: var(--muted); padding: 20px; font-size: 14px; }
+
+    .league-badge {
+      display: inline-block;
+      background: rgba(233,30,140,0.2);
+      color: var(--accent);
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <div class="header">
+      <div class="user-row">
+        <div class="avatar" id="avatar">?</div>
+        <div class="user-info">
+          <div class="nickname" id="nickname">Загрузка...</div>
+          <div class="game-id" id="gameId">ID: —</div>
+          <div class="league-badge" id="leagueBadge" style="display:none"></div>
+        </div>
+        <div class="elo-block">
+          <div class="elo-value" id="elo">—</div>
+          <div class="level-badge" id="level">Ур. —</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat"><div class="val" id="kd">0.00</div><div class="lbl">K/D</div></div>
+      <div class="stat"><div class="val" id="avg">0.0</div><div class="lbl">AVG</div></div>
+      <div class="stat"><div class="val" id="wins">0</div><div class="lbl">Побед</div></div>
+      <div class="stat"><div class="val" id="coins">0</div><div class="lbl">Монеты</div></div>
+    </div>
+
+    <!-- Pages -->
+    <div id="page-home" class="section">
+      <div class="section-title">Быстрые действия</div>
+      <div class="card-btn" onclick="openBot()">
+        <div class="icon">🎮</div>
+        <div class="text">
+          <div class="title">Встать в очередь</div>
+          <div class="sub">5v5 рейтинговый матч</div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+      <div class="card-btn" onclick="showPage('shop')">
+        <div class="icon">🛒</div>
+        <div class="text">
+          <div class="title">Магазин</div>
+          <div class="sub">Рамки, баннеры, кейсы</div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+      <div class="card-btn" onclick="showPage('top')">
+        <div class="icon">🏆</div>
+        <div class="text">
+          <div class="title">Топ игроков</div>
+          <div class="sub">Рейтинг StandFade</div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+    </div>
+
+    <div id="page-top" class="section hidden">
+      <div class="section-title">Топ 50</div>
+      <div class="card" id="top-list">
+        <div class="loading">Загрузка...</div>
+      </div>
+    </div>
+
+    <div id="page-history" class="section hidden">
+      <div class="section-title">История матчей</div>
+      <div class="card" id="history-list">
+        <div class="loading">Загрузка...</div>
+      </div>
+    </div>
+
+    <div id="page-shop" class="section hidden">
+      <div class="section-title">Магазин Fade</div>
+      <div class="card" id="shop-list">
+        <div class="loading">Загрузка...</div>
+      </div>
+    </div>
+
+    <div id="page-profile" class="section hidden">
+      <div class="section-title">Профиль</div>
+      <div class="card">
+        <div style="margin-bottom:10px"><span style="color:var(--muted)">Лига:</span> <span id="league">—</span></div>
+        <div style="margin-bottom:10px"><span style="color:var(--muted)">Матчей:</span> <span id="matches">0</span></div>
+        <div style="margin-bottom:10px"><span style="color:var(--muted)">Поражений:</span> <span id="losses">0</span></div>
+        <div><span style="color:var(--muted)">О себе:</span> <span id="about">Не указано</span></div>
+      </div>
+      <div class="card-btn" onclick="openBot()" style="margin-top:12px">
+        <div class="icon">⚙️</div>
+        <div class="text">
+          <div class="title">Открыть бота</div>
+          <div class="sub">Настройки, пати, админка</div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="nav">
+    <button class="active" data-page="home"><span class="ico">🏠</span>Главная</button>
+    <button data-page="top"><span class="ico">🏆</span>Топ</button>
+    <button data-page="history"><span class="ico">📋</span>История</button>
+    <button data-page="shop"><span class="ico">🛒</span>Магазин</button>
+    <button data-page="profile"><span class="ico">👤</span>Профиль</button>
+  </nav>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+    tg.setHeaderColor('#0b0b0f');
+    tg.setBackgroundColor('#0b0b0f');
+    tg.enableClosingConfirmation();
+
+    const user = tg.initDataUnsafe?.user;
+    const tgId = user?.id;
+    // Если API на том же домене — оставь '', иначе укажи URL бота/API
+    const API = '';
+
+    // Navigation
+    document.querySelectorAll('.nav button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        showPage(btn.dataset.page);
+      });
+    });
+
+    function showPage(name) {
+      document.querySelectorAll('[id^="page-"]').forEach(p => p.classList.add('hidden'));
+      const page = document.getElementById('page-' + name);
+      if (page) page.classList.remove('hidden');
+      if (name === 'top') loadTop();
+      if (name === 'history') loadHistory();
+      if (name === 'shop') loadShop();
+    }
+
+    function openBot() {
+      // Открыть бота
+      tg.openTelegramLink('https://t.me/' + (tg.initDataUnsafe?.start_param || 'your_bot'));
+    }
+
+    async function loadMe() {
+      if (!tgId) {
+        document.getElementById('nickname').textContent = 'Открой из бота';
+        return;
+      }
+      // Пока без API — показываем данные из Telegram
+      document.getElementById('nickname').textContent = user.first_name || user.username || 'Игрок';
+      document.getElementById('avatar').textContent = (user.first_name || '?')[0].toUpperCase();
+      document.getElementById('gameId').textContent = 'TG ID: ' + tgId;
+
+      // Когда будет API:
+      // try {
+      //   const res = await fetch(API + '/api/me?tg_id=' + tgId);
+      //   const data = await res.json();
+      //   if (!data.error) {
+      //     document.getElementById('nickname').textContent = data.nickname;
+      //     document.getElementById('elo').textContent = data.elo;
+      //     ...
+      //   }
+      // } catch(e) {}
+    }
+
+    async function loadTop() {
+      const el = document.getElementById('top-list');
+      // Заглушка пока нет API
+      el.innerHTML = '<div class="empty">Топ загрузится после подключения API<br>Сейчас смотри топ в боте</div>';
+    }
+
+    async function loadHistory() {
+      const el = document.getElementById('history-list');
+      el.innerHTML = '<div class="empty">История матчей появится после игр</div>';
+    }
+
+    async function loadShop() {
+      const el = document.getElementById('shop-list');
+      el.innerHTML = `
+        <div class="shop-item">
+          <div><div class="shop-name">Neon Frame</div><div class="shop-desc">Неоновая рамка</div></div>
+          <div class="shop-price">500 💰</div>
+        </div>
+        <div class="shop-item">
+          <div><div class="shop-name">Gold Frame</div><div class="shop-desc">Золотая рамка</div></div>
+          <div class="shop-price">1200 💰</div>
+        </div>
+        <div class="shop-item">
+          <div><div class="shop-name">Sakura Banner</div><div class="shop-desc">Баннер сакура</div></div>
+          <div class="shop-price">800 💰</div>
+        </div>
+        <div class="shop-item">
+          <div><div class="shop-name">Fade Case</div><div class="shop-desc">Случайный предмет</div></div>
+          <div class="shop-price">250 💰</div>
+        </div>
+        <div class="shop-item">
+          <div><div class="shop-name">Premium 7 дней</div><div class="shop-desc">Пати до 3 человек</div></div>
+          <div class="shop-price">1000 💰</div>
+        </div>
+      `;
+    }
+
+    loadMe();
+  </script>
+</body>
+</html>
