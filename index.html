@@ -3,417 +3,554 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>StandFade</title>
+  <title>Fade Faceit</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg: #0b0b0f;
+      --bg: #0b0b10;
       --card: #14141c;
-      --card2: #1c1c28;
-      --accent: #e91e8c;
-      --accent2: #ff2d9b;
-      --text: #ffffff;
-      --muted: #8b8b9e;
+      --pink: #e91e8c;
+      --pink2: #ff2d95;
+      --text: #f2f2f7;
+      --muted: #8b8b9a;
       --green: #22c55e;
       --red: #ef4444;
-      --gold: #fbbf24;
+      --purple: #a855f7;
+      --border: #22222e;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding-bottom: 90px;
-      overflow-x: hidden;
+      padding-bottom: 88px;
+      -webkit-font-smoothing: antialiased;
     }
-
-    /* Header */
     .header {
-      background: linear-gradient(180deg, #1a1020 0%, var(--bg) 100%);
-      padding: 20px 16px 16px;
-      border-bottom: 1px solid #1f1f2e;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px; background: rgba(20,20,28,0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: blur(12px);
     }
-    .user-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
+    .logo { font-weight: 800; font-size: 17px; letter-spacing: -0.4px; }
+    .logo span { color: var(--pink); }
+    .coins {
+      background: #1c1c28; padding: 6px 14px; border-radius: 20px;
+      font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 4px;
     }
-    .avatar {
-      width: 64px; height: 64px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), #7c3aed);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 26px; font-weight: 700;
-      border: 2px solid var(--accent);
-      flex-shrink: 0;
-    }
-    .user-info { flex: 1; min-width: 0; }
-    .nickname {
-      font-size: 20px; font-weight: 700;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .game-id { font-size: 13px; color: var(--muted); margin-top: 2px; }
-    .elo-block { text-align: right; }
-    .elo-value {
-      font-size: 26px; font-weight: 800;
-      background: linear-gradient(90deg, var(--accent), #a855f7);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-    .level-badge {
-      font-size: 12px; color: var(--muted);
-      margin-top: 2px;
-    }
-
-    /* Stats */
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      padding: 14px 16px;
-    }
-    .stat {
-      background: var(--card);
-      border-radius: 14px;
-      padding: 12px 6px;
-      text-align: center;
-      border: 1px solid #1f1f2e;
-    }
-    .stat .val { font-size: 17px; font-weight: 700; }
-    .stat .lbl { font-size: 11px; color: var(--muted); margin-top: 4px; }
-
-    /* Sections */
-    .section { padding: 0 16px 20px; }
-    .section-title {
-      font-size: 13px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      margin-bottom: 10px;
-      font-weight: 600;
-    }
-    .card {
-      background: var(--card);
-      border-radius: 16px;
-      padding: 14px;
-      margin-bottom: 10px;
-      border: 1px solid #1f1f2e;
-    }
-    .card-btn {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px;
-      background: var(--card);
-      border-radius: 16px;
-      margin-bottom: 8px;
-      border: 1px solid #1f1f2e;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .card-btn:active { background: var(--card2); }
-    .card-btn .icon {
-      width: 42px; height: 42px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, var(--accent), #7c3aed);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px;
-    }
-    .card-btn .text { flex: 1; }
-    .card-btn .title { font-weight: 600; font-size: 15px; }
-    .card-btn .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
-    .card-btn .arrow { color: var(--muted); font-size: 18px; }
-
-    /* Top list */
-    .top-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 11px 0;
-      border-bottom: 1px solid #1f1f2e;
-    }
-    .top-item:last-child { border-bottom: none; }
-    .rank {
-      width: 28px; text-align: center;
-      font-weight: 800; font-size: 15px; color: var(--muted);
-    }
-    .rank.g { color: var(--gold); }
-    .rank.s { color: #c0c0c0; }
-    .rank.b { color: #cd7f32; }
-    .top-name { flex: 1; font-weight: 600; }
-    .top-elo { font-weight: 700; color: var(--accent); }
-
-    /* History */
-    .hist-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid #1f1f2e;
-    }
-    .hist-item:last-child { border-bottom: none; }
-    .hist-map { font-weight: 600; }
-    .hist-change.pos { color: var(--green); }
-    .hist-change.neg { color: var(--red); }
-
-    /* Shop */
-    .shop-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid #1f1f2e;
-    }
-    .shop-item:last-child { border-bottom: none; }
-    .shop-name { font-weight: 600; }
-    .shop-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
-    .shop-price {
-      background: rgba(233,30,140,0.15);
-      color: var(--accent);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-weight: 700;
-      font-size: 13px;
-    }
-
-    /* Nav */
     .nav {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      background: #0f0f16;
-      border-top: 1px solid #1f1f2e;
-      display: flex;
-      justify-content: space-around;
-      padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: #101018; border-top: 1px solid var(--border);
+      display: flex; justify-content: space-around; padding: 10px 0 18px;
       z-index: 100;
     }
-    .nav button {
-      background: none; border: none;
-      color: var(--muted);
-      font-size: 10px;
-      display: flex; flex-direction: column;
-      align-items: center; gap: 4px;
-      min-width: 60px;
+    .nav-btn {
+      display: flex; flex-direction: column; align-items: center;
+      background: none; border: none; color: var(--muted); font-size: 10px;
+      gap: 4px; cursor: pointer; padding: 6px 12px; border-radius: 14px;
+      transition: all 0.2s;
     }
-    .nav button.active { color: var(--accent); }
-    .nav .ico { font-size: 22px; line-height: 1; }
-
+    .nav-btn.active { color: var(--pink); background: rgba(233,30,140,0.12); }
+    .nav-btn svg { width: 22px; height: 22px; }
+    .page { display: none; padding: 16px; animation: fadeIn 0.22s ease; }
+    .page.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .card {
+      background: var(--card); border-radius: 18px; padding: 16px;
+      margin-bottom: 12px; border: 1px solid var(--border);
+    }
+    .btn {
+      background: linear-gradient(135deg, var(--pink), #c2185b);
+      color: white; border: none; border-radius: 14px; padding: 14px 20px;
+      font-weight: 700; font-size: 15px; width: 100%; cursor: pointer;
+      transition: transform 0.12s, opacity 0.12s;
+    }
+    .btn:active { transform: scale(0.97); opacity: 0.9; }
+    .btn.secondary { background: #252532; }
+    .btn.outline { background: transparent; border: 2px solid var(--pink); color: var(--pink); }
+    .btn.sm { padding: 10px 16px; width: auto; font-size: 13px; }
+    .profile-header { display: flex; gap: 14px; align-items: center; }
+    .avatar {
+      width: 74px; height: 74px; border-radius: 50%;
+      background: linear-gradient(135deg, #2a2a38, #111);
+      border: 3px solid var(--pink); position: relative; overflow: hidden;
+      flex-shrink: 0;
+    }
+    .level-badge {
+      position: absolute; bottom: -3px; right: -3px;
+      background: var(--pink); color: #fff; font-size: 11px; font-weight: 800;
+      width: 24px; height: 24px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid var(--bg);
+    }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+      margin-top: 16px; text-align: center;
+    }
+    .stat-val { font-size: 18px; font-weight: 800; }
+    .stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .elo-big { font-size: 40px; font-weight: 900; color: var(--pink); line-height: 1.05; }
+    .elo-change { font-size: 13px; color: var(--green); }
+    .match-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 0; border-bottom: 1px solid var(--border);
+    }
+    .match-item:last-child { border-bottom: none; }
+    .result-win { color: var(--green); font-weight: 700; }
+    .result-lose { color: var(--red); font-weight: 700; }
+    .lobby-players { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .player-chip {
+      width: 46px; height: 46px; border-radius: 50%; background: #252532;
+      border: 2px solid #3a3a4a; display: flex; align-items: center; justify-content: center;
+      font-size: 11px; position: relative;
+    }
+    .player-chip.filled { border-color: var(--pink); }
+    .player-chip .lvl {
+      position: absolute; bottom: -3px; right: -3px;
+      background: var(--pink); font-size: 9px; width: 16px; height: 16px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    }
+    .map-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .map-card {
+      background: #1a1a24; border-radius: 14px; overflow: hidden; cursor: pointer;
+      border: 2px solid transparent; transition: border 0.2s;
+    }
+    .map-card.selected { border-color: var(--pink); }
+    .map-card img { width: 100%; height: 90px; object-fit: cover; display: block; }
+    .map-name { padding: 8px; font-size: 13px; font-weight: 600; text-align: center; }
+    .shop-item { display: flex; gap: 12px; align-items: center; margin-bottom: 14px; }
+    .shop-icon {
+      width: 52px; height: 52px; border-radius: 14px; background: #252532;
+      display: flex; align-items: center; justify-content: center; font-size: 24px;
+      flex-shrink: 0;
+    }
+    .daily-row { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; }
+    .daily-day {
+      min-width: 54px; background: #1c1c28; border-radius: 12px; padding: 10px 6px;
+      text-align: center; font-size: 12px;
+    }
+    .daily-day.claimed { background: rgba(34,197,94,0.12); color: var(--green); }
+    .daily-day.today { border: 2px solid var(--pink); }
+    .section-title {
+      font-size: 12px; color: var(--muted); text-transform: uppercase;
+      letter-spacing: 0.8px; margin-bottom: 10px;
+    }
     .hidden { display: none !important; }
-    .loading { text-align: center; color: var(--muted); padding: 30px; }
-    .empty { text-align: center; color: var(--muted); padding: 20px; font-size: 14px; }
-
-    .league-badge {
-      display: inline-block;
-      background: rgba(233,30,140,0.2);
-      color: var(--accent);
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 6px;
-      margin-top: 4px;
-      font-weight: 600;
+    .tab-row { display: flex; gap: 8px; margin-bottom: 14px; }
+    .tab {
+      flex: 1; padding: 10px; border-radius: 12px; background: #1c1c28;
+      border: none; color: var(--muted); font-weight: 600; font-size: 13px; cursor: pointer;
     }
+    .tab.active { background: var(--pink); color: #fff; }
+    .ban-screen { text-align: center; padding: 48px 20px; }
+    .ban-icon { font-size: 64px; margin-bottom: 16px; }
+  
+    .level-img { width: 28px; height: 28px; vertical-align: middle; }
+    .map-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+    .map-thumb { border-radius: 12px; overflow: hidden; border: 2px solid #222; }
+    .map-thumb img { width: 100%; height: 70px; object-fit: cover; display: block; }
+    .map-thumb .cap { padding: 6px; font-size: 12px; font-weight: 600; text-align: center; background: #1a1a24; }
+
   </style>
 </head>
 <body>
-  <div id="app">
-    <!-- Header -->
-    <div class="header">
-      <div class="user-row">
-        <div class="avatar" id="avatar">?</div>
-        <div class="user-info">
-          <div class="nickname" id="nickname">Загрузка...</div>
-          <div class="game-id" id="gameId">ID: —</div>
-          <div class="league-badge" id="leagueBadge" style="display:none"></div>
+  <div class="header">
+    <div class="logo">FADE <span>FACEIT</span></div>
+    <div class="coins" id="coins">⚡ 577</div>
+  </div>
+
+  <!-- PLAY -->
+  <div id="page-play" class="page active">
+    <div class="card">
+      <h2 style="margin-bottom:6px;font-size:22px">ИГРАТЬ</h2>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:14px">В очередях сейчас: <b id="queue-count">4</b></div>
+      <div class="tab-row">
+        <button class="tab active" id="tab-default" onclick="setMode('default')">DEFAULT</button>
+        <button class="tab" id="tab-qual" onclick="setMode('qual')">QUALIFICATION</button>
+      </div>
+      <div class="card" style="margin:0;background:#1a1a24">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div>
+            <div style="font-weight:700">ЛОББИ #1</div>
+            <div style="font-size:12px;color:var(--muted)">Средний ELO: 1206</div>
+          </div>
+          <div style="font-weight:800;color:var(--pink)">4/10</div>
         </div>
-        <div class="elo-block">
-          <div class="elo-value" id="elo">—</div>
-          <div class="level-badge" id="level">Ур. —</div>
+        <div class="lobby-players">
+          <div class="player-chip filled"><span class="lvl">3</span></div>
+          <div class="player-chip filled"><span class="lvl">3</span></div>
+          <div class="player-chip filled"><span class="lvl">2</span></div>
+          <div class="player-chip filled"><span class="lvl">2</span></div>
+          <div class="player-chip">+</div>
+          <div class="player-chip">+</div>
+          <div class="player-chip">+</div>
+          <div class="player-chip">+</div>
+          <div class="player-chip">+</div>
+          <div class="player-chip">+</div>
         </div>
+        <button class="btn" onclick="joinQueue()">ВОЙТИ ×2</button>
       </div>
     </div>
-
-    <!-- Stats -->
-    <div class="stats">
-      <div class="stat"><div class="val" id="kd">0.00</div><div class="lbl">K/D</div></div>
-      <div class="stat"><div class="val" id="avg">0.0</div><div class="lbl">AVG</div></div>
-      <div class="stat"><div class="val" id="wins">0</div><div class="lbl">Побед</div></div>
-      <div class="stat"><div class="val" id="coins">0</div><div class="lbl">Монеты</div></div>
-    </div>
-
-    <!-- Pages -->
-    <div id="page-home" class="section">
-      <div class="section-title">Быстрые действия</div>
-      <div class="card-btn" onclick="openBot()">
-        <div class="icon">🎮</div>
-        <div class="text">
-          <div class="title">Встать в очередь</div>
-          <div class="sub">5v5 рейтинговый матч</div>
+    <div class="card">
+      <div class="section-title">Пати</div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-weight:700">Пати 2/3</div>
+          <div style="font-size:12px;color:var(--muted)">Ты лидер — выбирай лобби</div>
         </div>
-        <div class="arrow">›</div>
-      </div>
-      <div class="card-btn" onclick="showPage('shop')">
-        <div class="icon">🛒</div>
-        <div class="text">
-          <div class="title">Магазин</div>
-          <div class="sub">Рамки, баннеры, кейсы</div>
-        </div>
-        <div class="arrow">›</div>
-      </div>
-      <div class="card-btn" onclick="showPage('top')">
-        <div class="icon">🏆</div>
-        <div class="text">
-          <div class="title">Топ игроков</div>
-          <div class="sub">Рейтинг StandFade</div>
-        </div>
-        <div class="arrow">›</div>
-      </div>
-    </div>
-
-    <div id="page-top" class="section hidden">
-      <div class="section-title">Топ 50</div>
-      <div class="card" id="top-list">
-        <div class="loading">Загрузка...</div>
-      </div>
-    </div>
-
-    <div id="page-history" class="section hidden">
-      <div class="section-title">История матчей</div>
-      <div class="card" id="history-list">
-        <div class="loading">Загрузка...</div>
-      </div>
-    </div>
-
-    <div id="page-shop" class="section hidden">
-      <div class="section-title">Магазин Fade</div>
-      <div class="card" id="shop-list">
-        <div class="loading">Загрузка...</div>
-      </div>
-    </div>
-
-    <div id="page-profile" class="section hidden">
-      <div class="section-title">Профиль</div>
-      <div class="card">
-        <div style="margin-bottom:10px"><span style="color:var(--muted)">Лига:</span> <span id="league">—</span></div>
-        <div style="margin-bottom:10px"><span style="color:var(--muted)">Матчей:</span> <span id="matches">0</span></div>
-        <div style="margin-bottom:10px"><span style="color:var(--muted)">Поражений:</span> <span id="losses">0</span></div>
-        <div><span style="color:var(--muted)">О себе:</span> <span id="about">Не указано</span></div>
-      </div>
-      <div class="card-btn" onclick="openBot()" style="margin-top:12px">
-        <div class="icon">⚙️</div>
-        <div class="text">
-          <div class="title">Открыть бота</div>
-          <div class="sub">Настройки, пати, админка</div>
-        </div>
-        <div class="arrow">›</div>
+        <button class="btn sm secondary" onclick="showPage('more')">Открыть</button>
       </div>
     </div>
   </div>
 
-  <!-- Bottom Nav -->
+  
+    <div class="card">
+      <div class="section-title">Карты пула</div>
+      <div class="map-gallery">
+        <div class="map-thumb"><img src="https://liquipedia.net/commons/images/c/cb/Sakura_Map.jpg" alt="Sakura"/><div class="cap">🌸 Sakura</div></div>
+        <div class="map-thumb"><img src="https://liquipedia.net/commons/images/7/71/Zone_9_Map.jpg" alt="Zone9"/><div class="cap">🏢 Zone 9</div></div>
+        <div class="map-thumb"><img src="https://static.wikia.nocookie.net/standoff-2/images/f/f1/%D0%9F%D1%80%D0%B5%D0%B2%D1%8C%D1%8E_%E2%80%94_%D0%9A%D0%B0%D1%80%D1%82%D0%B0_Rust_0.30.0.png/revision/latest" alt="Rust"/><div class="cap">🏭 Rust</div></div>
+        <div class="map-thumb"><img src="https://static.wikia.nocookie.net/standoff-2/images/4/4e/Province.png/revision/latest" alt="Province"/><div class="cap">🏰 Province</div></div>
+        <div class="map-thumb" style="grid-column:1/-1"><img src="https://static.wikia.nocookie.net/standoff-2/images/8/8a/Sandstone.png/revision/latest" alt="SandStone" style="height:90px"/><div class="cap">🏜️ SandStone</div></div>
+      </div>
+    </div>
+
+  <!-- PROFILE -->
+  <div id="page-profile" class="page">
+    <div class="card">
+      <div class="profile-header">
+        <div class="avatar">
+          <div class="level-badge" id="lvl-badge">4</div>
+        </div>
+        <div style="min-width:0">
+          <div style="font-weight:800;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="nickname">tgk: wtfwonky</div>
+          <div style="color:var(--muted);font-size:12px">STATIC #17 · ID wonky</div>
+          <div class="elo-big" id="elo">870</div>
+          <div class="elo-change">+6 за 10 матчей</div>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div><div class="stat-val" id="kd">1.42</div><div class="stat-label">K/D</div></div>
+        <div><div class="stat-val" id="avg">15</div><div class="stat-label">AVG</div></div>
+        <div><div class="stat-val" id="wins">12</div><div class="stat-label">Побед</div></div>
+        <div><div class="stat-val" id="matches">30</div><div class="stat-label">Матчей</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Ежедневная награда</div>
+      <div class="daily-row">
+        <div class="daily-day claimed">День 1<br>20</div>
+        <div class="daily-day claimed">День 2<br>30</div>
+        <div class="daily-day claimed">День 3<br>40</div>
+        <div class="daily-day claimed">День 4<br>50</div>
+        <div class="daily-day today">День 5<br>60</div>
+        <div class="daily-day">День 6<br>80</div>
+        <div class="daily-day" style="background:linear-gradient(135deg,#7c3aed,#c026d3)">Бонус<br>150</div>
+      </div>
+      <button class="btn" style="margin-top:12px" onclick="claimDaily()">Получить</button>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-weight:700;font-size:13px;color:var(--muted)">QUALIFICATION LEAGUE</div>
+          <div style="color:var(--pink);font-size:28px;font-weight:900">1000 ELO</div>
+        </div>
+        <div style="background:#252532;width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800">4</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px;text-align:center;font-size:13px">
+        <div><div style="color:var(--muted);font-size:11px">Место</div><div style="font-weight:700">#1</div></div>
+        <div><div style="color:var(--muted);font-size:11px">Матчей</div><div style="font-weight:700">0</div></div>
+        <div><div style="color:var(--muted);font-size:11px">Винрейт</div><div style="font-weight:700">0%</div></div>
+        <div><div style="color:var(--muted);font-size:11px">K/D</div><div style="font-weight:700">0.00</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Предупреждения</div>
+      <div style="font-size:18px;font-weight:700">1 / 3</div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">О себе</div>
+      <div id="about" style="color:var(--muted);font-size:14px">Не указано</div>
+      <button class="btn secondary sm" style="margin-top:10px" onclick="editAbout()">Изменить</button>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div id="page-history" class="page">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+        <div class="section-title" style="margin:0">Последние матчи</div>
+        <div style="color:var(--muted);font-size:13px">40% W</div>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:14px">
+        <div style="width:36px;height:36px;border-radius:8px;background:#ef4444;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px">L</div>
+        <div style="width:36px;height:36px;border-radius:8px;background:#22c55e;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px">W</div>
+        <div style="width:36px;height:36px;border-radius:8px;background:#ef4444;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px">L</div>
+        <div style="width:36px;height:36px;border-radius:8px;background:#22c55e;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px">W</div>
+        <div style="width:36px;height:36px;border-radius:8px;background:#ef4444;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px">L</div>
+        <div style="width:36px;height:36px;border-radius:8px;background:#ef4444;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px">L</div>
+      </div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:12px">Серия: 1 поражений подряд</div>
+
+      <div class="match-item">
+        <div>
+          <div style="font-weight:700">Rust · Поражение</div>
+          <div style="font-size:12px;color:var(--muted)">#51 · 26.10 15:22 · T · 7:10</div>
+        </div>
+        <div style="text-align:right">
+          <div class="result-lose">30/0/11</div>
+          <div style="font-size:12px;color:var(--red)">-13 ELO</div>
+        </div>
+      </div>
+      <div class="match-item">
+        <div>
+          <div style="font-weight:700">Province · Победа</div>
+          <div style="font-size:12px;color:var(--muted)">#50 · 26.10 13:46 · T · 10:9</div>
+        </div>
+        <div style="text-align:right">
+          <div class="result-win">26/1/12</div>
+          <div style="font-size:12px;color:var(--green)">+31 ELO</div>
+        </div>
+      </div>
+      <div class="match-item">
+        <div>
+          <div style="font-weight:700">Sakura · Поражение</div>
+          <div style="font-size:12px;color:var(--muted)">#40 · 25.10 22:39 · T · 7:10</div>
+        </div>
+        <div style="text-align:right">
+          <div class="result-lose">18/3/13</div>
+          <div style="font-size:12px;color:var(--red)">-25 ELO</div>
+        </div>
+      </div>
+      <div class="match-item">
+        <div>
+          <div style="font-weight:700">Rust · Победа</div>
+          <div style="font-size:12px;color:var(--muted)">#36 · 24.10 20:47 · T · 10:2</div>
+        </div>
+        <div style="text-align:right">
+          <div class="result-win">20/3/4</div>
+          <div style="font-size:12px;color:var(--green)">+38 ELO</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOP -->
+  <div id="page-top" class="page">
+    <div class="card">
+      <h2 style="margin-bottom:16px;font-size:20px">Топ игроков</h2>
+      <div id="top-list"></div>
+    </div>
+  </div>
+
+  <!-- SHOP -->
+  <div id="page-shop" class="page">
+    <div class="card">
+      <h2 style="margin-bottom:16px;font-size:20px">Магазин Fade</h2>
+      <div class="shop-item">
+        <div class="shop-icon">🖼️</div>
+        <div style="flex:1">
+          <div style="font-weight:700">Neon Frame</div>
+          <div style="font-size:12px;color:var(--muted)">Неоновая рамка</div>
+        </div>
+        <button class="btn sm" onclick="buyItem(500)">500 ⚡</button>
+      </div>
+      <div class="shop-item">
+        <div class="shop-icon">🥇</div>
+        <div style="flex:1">
+          <div style="font-weight:700">Gold Frame</div>
+          <div style="font-size:12px;color:var(--muted)">Золотая рамка</div>
+        </div>
+        <button class="btn sm" onclick="buyItem(1200)">1200 ⚡</button>
+      </div>
+      <div class="shop-item">
+        <div class="shop-icon">🌸</div>
+        <div style="flex:1">
+          <div style="font-weight:700">Sakura Banner</div>
+          <div style="font-size:12px;color:var(--muted)">Живой баннер</div>
+        </div>
+        <button class="btn sm" onclick="buyItem(800)">800 ⚡</button>
+      </div>
+      <div class="shop-item">
+        <div class="shop-icon">📦</div>
+        <div style="flex:1">
+          <div style="font-weight:700">Fade Case</div>
+          <div style="font-size:12px;color:var(--muted)">Случайный предмет</div>
+        </div>
+        <button class="btn sm" onclick="buyItem(250)">250 ⚡</button>
+      </div>
+      <div class="shop-item">
+        <div class="shop-icon">👑</div>
+        <div style="flex:1">
+          <div style="font-weight:700">Premium 7 дней</div>
+          <div style="font-size:12px;color:var(--muted)">Пати до 3 человек</div>
+        </div>
+        <button class="btn sm" onclick="buyItem(1000)">1000 ⚡</button>
+      </div>
+      <div class="shop-item">
+        <div class="shop-icon">⚡</div>
+        <div style="flex:1">
+          <div style="font-weight:700">ELO Boost x1.5</div>
+          <div style="font-size:12px;color:var(--muted)">На 5 матчей</div>
+        </div>
+        <button class="btn sm" onclick="buyItem(300)">300 ⚡</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MORE -->
+  <div id="page-more" class="page">
+    <div class="card">
+      <h2 style="margin-bottom:6px;font-size:20px">Ещё</h2>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:16px">Все разделы по группам</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn secondary" style="text-align:left" onclick="alert('Пати: 2 слота бесплатно, 3 с Premium')">👥 Пати — играй с друзьями</button>
+        <button class="btn secondary" style="text-align:left" onclick="showPage('history')">📋 История матчей</button>
+        <button class="btn secondary" style="text-align:left" onclick="alert('Кланы и клановые битвы')">🛡️ Кланы</button>
+        <button class="btn secondary" style="text-align:left" onclick="alert('Достижения 4/16')">🏅 Достижения</button>
+        <button class="btn secondary" style="text-align:left" onclick="alert('Инвентарь: рамки, баннеры, кейсы')">🎒 Инвентарь</button>
+        <button class="btn secondary" style="text-align:left" onclick="alert('Друзья')">🤝 Друзья</button>
+        <button class="btn secondary" style="text-align:left" onclick="alert('Правила сервера Fade Faceit')">📜 Правила</button>
+        <button class="btn secondary" style="text-align:left" onclick="alert('Язык / Цвет / Уведомления')">⚙️ Настройки</button>
+        <button class="btn secondary" style="text-align:left" onclick="alert('Сезон 1 · Qualification / FPL')">📅 Сезон</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BAN -->
+  <div id="ban-screen" class="page ban-screen hidden">
+    <div class="ban-icon">💀</div>
+    <h1 style="margin-bottom:8px">Вы забанены</h1>
+    <p style="color:var(--muted);margin-bottom:24px">Доступ к Fade Faceit ограничен</p>
+    <div class="card" style="text-align:left">
+      <div style="margin-bottom:12px"><b>Кто выдал:</b> chester</div>
+      <div style="margin-bottom:12px"><b>Причина:</b> Cheating — проверка #104</div>
+      <div><b>Срок:</b> Навсегда</div>
+    </div>
+    <button class="btn" style="margin-top:20px" onclick="Telegram.WebApp.openTelegramLink('https://t.me/fade_faceit')">Написать в поддержку</button>
+  </div>
+
   <nav class="nav">
-    <button class="active" data-page="home"><span class="ico">🏠</span>Главная</button>
-    <button data-page="top"><span class="ico">🏆</span>Топ</button>
-    <button data-page="history"><span class="ico">📋</span>История</button>
-    <button data-page="shop"><span class="ico">🛒</span>Магазин</button>
-    <button data-page="profile"><span class="ico">👤</span>Профиль</button>
+    <button class="nav-btn" data-page="top" onclick="showPage('top')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5 2 7.5L12 17l-6.5 4 2-7.5L2 9h7z"/></svg>
+      ТОП
+    </button>
+    <button class="nav-btn" data-page="more" onclick="showPage('more')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm0 2c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4z"/></svg>
+      ПРОЧЕЕ
+    </button>
+    <button class="nav-btn active" data-page="play" onclick="showPage('play')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      ИГРАТЬ
+    </button>
+    <button class="nav-btn" data-page="shop" onclick="showPage('shop')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.6-1.4 2.4c-.2.3-.2.7-.1 1 .2.4.6.6 1 .6h12v-2H7.4l1.1-2h7.5c.4 0 .7-.2.9-.5l3.6-6.5c.1-.2.1-.4 0-.6-.1-.2-.3-.3-.5-.3H5.2L4.3 2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+      МАГАЗИН
+    </button>
+    <button class="nav-btn" data-page="profile" onclick="showPage('profile')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm0 2c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4z"/></svg>
+      ПРОФИЛЬ
+    </button>
   </nav>
 
   <script>
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
-    tg.setHeaderColor('#0b0b0f');
-    tg.setBackgroundColor('#0b0b0f');
-    tg.enableClosingConfirmation();
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      try { tg.setHeaderColor('#0b0b10'); tg.setBackgroundColor('#0b0b10'); } catch(e){}
+    }
 
-    const user = tg.initDataUnsafe?.user;
-    const tgId = user?.id;
-    // Если API на том же домене — оставь '', иначе укажи URL бота/API
-    const API = '';
-
-    // Navigation
-    document.querySelectorAll('.nav button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        showPage(btn.dataset.page);
-      });
-    });
+    const user = {
+      nickname: 'tgk: wtfwonky',
+      elo: 870,
+      level: 4,
+      kd: 1.42,
+      avg: 15,
+      coins: 577,
+      wins: 12,
+      matches: 30,
+      warns: 1,
+      about: ''
+    };
 
     function showPage(name) {
-      document.querySelectorAll('[id^="page-"]').forEach(p => p.classList.add('hidden'));
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       const page = document.getElementById('page-' + name);
-      if (page) page.classList.remove('hidden');
-      if (name === 'top') loadTop();
-      if (name === 'history') loadHistory();
-      if (name === 'shop') loadShop();
+      if (page) page.classList.add('active');
+      document.querySelectorAll('.nav-btn').forEach(b => {
+        if (b.dataset.page === name) b.classList.add('active');
+      });
     }
 
-    function openBot() {
-      // Открыть бота
-      tg.openTelegramLink('https://t.me/' + (tg.initDataUnsafe?.start_param || 'your_bot'));
+    function setMode(m) {
+      document.getElementById('tab-default').classList.toggle('active', m === 'default');
+      document.getElementById('tab-qual').classList.toggle('active', m === 'qual');
     }
 
-    async function loadMe() {
-      if (!tgId) {
-        document.getElementById('nickname').textContent = 'Открой из бота';
-        return;
+    function joinQueue() {
+      if (tg) tg.HapticFeedback.impactOccurred('medium');
+      alert('Вы встали в очередь DEFAULT');
+    }
+
+    function claimDaily() {
+      if (tg) tg.HapticFeedback.notificationOccurred('success');
+      user.coins += 60;
+      document.getElementById('coins').textContent = '⚡ ' + user.coins;
+      alert('Награда получена! +60 ⚡');
+    }
+
+    function buyItem(price) {
+      if (user.coins < price) { alert('Недостаточно Fade Coins'); return; }
+      user.coins -= price;
+      document.getElementById('coins').textContent = '⚡ ' + user.coins;
+      if (tg) tg.HapticFeedback.notificationOccurred('success');
+      alert('Покупка успешна!');
+    }
+
+    function editAbout() {
+      const t = prompt('О себе:', user.about || '');
+      if (t !== null) {
+        user.about = t;
+        document.getElementById('about').textContent = t || 'Не указано';
       }
-      // Пока без API — показываем данные из Telegram
-      document.getElementById('nickname').textContent = user.first_name || user.username || 'Игрок';
-      document.getElementById('avatar').textContent = (user.first_name || '?')[0].toUpperCase();
-      document.getElementById('gameId').textContent = 'TG ID: ' + tgId;
-
-      // Когда будет API:
-      // try {
-      //   const res = await fetch(API + '/api/me?tg_id=' + tgId);
-      //   const data = await res.json();
-      //   if (!data.error) {
-      //     document.getElementById('nickname').textContent = data.nickname;
-      //     document.getElementById('elo').textContent = data.elo;
-      //     ...
-      //   }
-      // } catch(e) {}
     }
 
-    async function loadTop() {
-      const el = document.getElementById('top-list');
-      // Заглушка пока нет API
-      el.innerHTML = '<div class="empty">Топ загрузится после подключения API<br>Сейчас смотри топ в боте</div>';
-    }
+    const topPlayers = [
+      { name: '[AIM] w...', elo: 1534, lvl: 8 },
+      { name: '[AIM] Pr...', elo: 1344, lvl: 7 },
+      { name: '[AB] wh...', elo: 1246, lvl: 6 },
+      { name: 'tgk: wtf...', elo: 870, lvl: 4 },
+      { name: 'egoist', elo: 850, lvl: 4 },
+      { name: '[HLTV] ...', elo: 979, lvl: 5 },
+      { name: 'Ебашу м...', elo: 913, lvl: 4 },
+      { name: 'уубуу', elo: 698, lvl: 3 },
+    ];
+    const topList = document.getElementById('top-list');
+    topPlayers.forEach((p, i) => {
+      const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1) + '.';
+      topList.innerHTML += `
+        <div style="display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border)">
+          <div>${medal} <b>${p.name}</b> <span style="color:var(--muted);font-size:12px">ур.${p.lvl}</span></div>
+          <div style="color:var(--pink);font-weight:700">${p.elo}</div>
+        </div>`;
+    });
 
-    async function loadHistory() {
-      const el = document.getElementById('history-list');
-      el.innerHTML = '<div class="empty">История матчей появится после игр</div>';
-    }
-
-    async function loadShop() {
-      const el = document.getElementById('shop-list');
-      el.innerHTML = `
-        <div class="shop-item">
-          <div><div class="shop-name">Neon Frame</div><div class="shop-desc">Неоновая рамка</div></div>
-          <div class="shop-price">500 💰</div>
-        </div>
-        <div class="shop-item">
-          <div><div class="shop-name">Gold Frame</div><div class="shop-desc">Золотая рамка</div></div>
-          <div class="shop-price">1200 💰</div>
-        </div>
-        <div class="shop-item">
-          <div><div class="shop-name">Sakura Banner</div><div class="shop-desc">Баннер сакура</div></div>
-          <div class="shop-price">800 💰</div>
-        </div>
-        <div class="shop-item">
-          <div><div class="shop-name">Fade Case</div><div class="shop-desc">Случайный предмет</div></div>
-          <div class="shop-price">250 💰</div>
-        </div>
-        <div class="shop-item">
-          <div><div class="shop-name">Premium 7 дней</div><div class="shop-desc">Пати до 3 человек</div></div>
-          <div class="shop-price">1000 💰</div>
-        </div>
-      `;
-    }
-
-    loadMe();
+    document.getElementById('nickname').textContent = user.nickname;
+    document.getElementById('elo').textContent = user.elo;
+    document.getElementById('kd').textContent = user.kd;
+    document.getElementById('avg').textContent = user.avg;
+    document.getElementById('lvl-badge').textContent = user.level;
+    document.getElementById('coins').textContent = '⚡ ' + user.coins;
+    document.getElementById('wins').textContent = user.wins;
+    document.getElementById('matches').textContent = user.matches;
   </script>
 </body>
 </html>
