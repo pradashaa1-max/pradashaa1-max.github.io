@@ -78,19 +78,24 @@ input:focus{border-color:var(--accent)}label{display:block;font-size:12px;color:
   <button class="btn" onclick="checkSubs(true)">Я подписался — проверить</button>
 </div>
 
-<!-- REGISTRATION (screenshot first) -->
+<!-- REGISTRATION (screenshot only) -->
 <div class="page" id="p-reg">
   <h1>Регистрация</h1>
-  <p class="sub">Сначала <b>скриншот профиля StandFade</b>, потом ник и Game ID. После этого — калибровка 0/10.</p>
+  <p class="sub">Пришли <b>скриншот профиля StandFade</b> (ник и ID должны быть видны). Ник и Game ID распознаются автоматически.</p>
   <div class="err" id="reg-err"></div>
-  <label>1. Скриншот профиля StandFade *</label>
-  <input type="file" id="reg-photo" accept="image/*" capture="environment" onchange="previewPhoto(this)"/>
+  <label>Скриншот профиля StandFade *</label>
+  <input type="file" id="reg-photo" accept="image/*" onchange="previewPhoto(this)"/>
   <img id="photo-preview" class="preview" alt="preview"/>
-  <label>2. Ник *</label>
-  <input id="reg-nick" placeholder="Ник из StandFade" maxlength="24" autocomplete="off"/>
-  <label>3. Game ID (латиница / цифры) *</label>
-  <input id="reg-id" placeholder="abc123 или 12345" maxlength="32" autocomplete="off"/>
-  <button class="btn" style="margin-top:8px" onclick="doRegister()">Зарегистрироваться</button>
+  <button class="btn" id="reg-scan-btn" style="margin-top:8px" onclick="doScan()">Распознать скриншот</button>
+  <div id="reg-confirm" style="display:none;margin-top:12px">
+    <div class="card">
+      <div class="sub">Проверь данные:</div>
+      <div><b>Ник:</b> <span id="reg-nick-out">—</span></div>
+      <div><b>Game ID:</b> <span id="reg-id-out">—</span></div>
+    </div>
+    <button class="btn" style="margin-top:8px" onclick="doRegisterConfirm()">✅ Всё верно</button>
+    <button class="btn ghost" style="margin-top:8px" onclick="resetReg()">📸 Другой скриншот</button>
+  </div>
 </div>
 
 <!-- PROFILE -->
@@ -162,11 +167,27 @@ input:focus{border-color:var(--accent)}label{display:block;font-size:12px;color:
 
 <div class="page" id="p-more">
   <h1>Ещё</h1>
-  <div class="menu-item" onclick="claimDaily()"><div class="ico">🎁</div><div><div style="font-weight:800">Ежедневка</div></div><span class="arrow">›</span></div>
+  <div class="menu-item" onclick="openFeat('daily')"><div class="ico">🎁</div><div><div style="font-weight:800">Ежедневка и рулетка</div></div><span class="arrow">›</span></div>
+  <div class="menu-item" onclick="openFeat('friends')"><div class="ico">🤝</div><div><div style="font-weight:800">Друзья</div></div><span class="arrow">›</span></div>
+  <div class="menu-item" onclick="openFeat('party')"><div class="ico">👥</div><div><div style="font-weight:800">Пати</div></div><span class="arrow">›</span></div>
+  <div class="menu-item" onclick="openFeat('clan')"><div class="ico">🛡</div><div><div style="font-weight:800">Клан</div></div><span class="arrow">›</span></div>
+  <div class="menu-item" onclick="openFeat('cases')"><div class="ico">📦</div><div><div style="font-weight:800">Кейсы</div></div><span class="arrow">›</span></div>
+  <div class="menu-item" onclick="openFeat('inventory')"><div class="ico">🎒</div><div><div style="font-weight:800">Инвентарь</div></div><span class="arrow">›</span></div>
+  <div class="menu-item" onclick="openFeat('achievements')"><div class="ico">🏅</div><div><div style="font-weight:800">Достижения</div></div><span class="arrow">›</span></div>
+  <div class="menu-item" onclick="openFeat('report')"><div class="ico">🚨</div><div><div style="font-weight:800">Репорт</div></div><span class="arrow">›</span></div>
   <div class="menu-item" onclick="showSeason()"><div class="ico">👑</div><div><div style="font-weight:800">Сезон</div></div><span class="arrow">›</span></div>
   <div class="menu-item" onclick="promptPromo()"><div class="ico">%</div><div><div style="font-weight:800">Промокод</div></div><span class="arrow">›</span></div>
   <div class="menu-item" onclick="promptSearch()"><div class="ico">🔍</div><div><div style="font-weight:800">Найти игрока</div></div><span class="arrow">›</span></div>
-  <div class="menu-item" onclick="toast('Без читов · 3 варна = мут 1ч')"><div class="ico">📜</div><div><div style="font-weight:800">Правила</div></div><span class="arrow">›</span></div>
+  <div class="menu-item" onclick="openFeat('rules')"><div class="ico">📜</div><div><div style="font-weight:800">Правила</div></div><span class="arrow">›</span></div>
+</div>
+
+<!-- FEATURE PAGE (друзья, клан, кейсы и т.д.) -->
+<div class="page" id="p-feat">
+  <div class="topline"><button class="btn ghost sm" onclick="go('more')">‹ Назад</button></div>
+  <h1 id="feat-title">—</h1>
+  <div class="err" id="feat-err"></div>
+  <div id="feat-body"></div>
+</div>
 </div>
 
 <nav class="nav locked" id="main-nav">
@@ -412,22 +433,47 @@ async function showSeason(){ try{ const r=await api('/api/season'); toast('Се�
 async function promptPromo(){ const code=prompt('Промокод'); if(!code) return; try{ const r=await api('/api/promo',{method:'POST',body:JSON.stringify({code})}); toast('+'+r.reward+'⚡'); renderUser(await api('/api/me')); }catch(e){toast(e.message)} }
 async function promptSearch(){ const q=prompt('Ник или ID'); if(!q) return; try{ const p=await api('/api/player/'+encodeURIComponent(q)); toast(p.nickname+' · '+(p.calibrating?p.calib_matches+'/10':p.elo)); }catch(e){toast(e.message)} }
 
-async function doRegister(){
-  const nick=(document.getElementById('reg-nick').value||'').trim();
-  const gid=(document.getElementById('reg-id').value||'').trim();
+let regScanned=false;
+
+function resetReg(){
+  regScanned=false;
+  document.getElementById('reg-confirm').style.display='none';
+  document.getElementById('reg-scan-btn').style.display='block';
+  document.getElementById('reg-err').textContent='';
+  document.getElementById('reg-photo').value='';
+  document.getElementById('photo-preview').style.display='none';
+}
+
+function fileToDataURL(file){
+  return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file); });
+}
+
+async function doScan(){
   const err=document.getElementById('reg-err');
   const file=document.getElementById('reg-photo');
   err.textContent='';
-  if(!file.files||!file.files[0]){ err.textContent='Нужен скриншот профиля StandFade'; toast('Загрузи скриншот'); return; }
-  if(nick.length<2){ err.textContent='Введи ник'; return; }
-  if(!/^[A-Za-z0-9_-]{2,32}$/.test(gid)){ err.textContent='Game ID: латиница, цифры, _ -'; return; }
+  if(!file.files||!file.files[0]){ err.textContent='Сначала выбери скриншот профиля'; toast('Нужен скриншот'); return; }
   let photo_base64;
+  try{ photo_base64=await fileToDataURL(file.files[0]); }
+  catch(e){ err.textContent='Не удалось прочитать фото'; return; }
   try{
-    photo_base64=await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file.files[0]); });
-  }catch(e){ err.textContent='Не удалось прочитать фото'; return; }
+    toast('Распознаю скриншот...');
+    const r=await api('/api/register/scan',{method:'POST',body:JSON.stringify({photo_base64})});
+    regScanned=true;
+    document.getElementById('reg-nick-out').textContent=r.nickname;
+    document.getElementById('reg-id-out').textContent=r.game_id;
+    document.getElementById('reg-confirm').style.display='block';
+    document.getElementById('reg-scan-btn').style.display='none';
+  }catch(e){ err.textContent=e.message; toast(e.message); }
+}
+
+async function doRegisterConfirm(){
+  const err=document.getElementById('reg-err');
+  err.textContent='';
+  if(!regScanned){ err.textContent='Сначала распознай скриншот'; return; }
   try{
     toast('Регистрация...');
-    await api('/api/register/photo',{method:'POST',body:JSON.stringify({nickname:nick,game_id:gid,photo_base64})});
+    await api('/api/register/confirm',{method:'POST',body:'{}'});
     toast('Готово! Калибровка 0/10');
     const me=await api('/api/me');
     unlockApp();
@@ -435,6 +481,119 @@ async function doRegister(){
     go('profile');
   }catch(e){ err.textContent=e.message; toast(e.message); }
 }
+
+
+// ---------- функции Ещё ----------
+function esc(v){ return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function feat(title){ document.getElementById('feat-title').textContent=title; document.getElementById('feat-err').textContent=''; document.getElementById('feat-body').innerHTML='<div class="sub">Загрузка...</div>'; go('feat'); }
+function featBody(html){ document.getElementById('feat-body').innerHTML=html; }
+function featErr(e){ document.getElementById('feat-err').textContent=e.message||String(e); }
+
+const FEATS={
+  async daily(){
+    feat('Ежедневка и рулетка');
+    featBody(`<div class="card"><button class="btn" onclick="claimDaily()">🎁 Ежедневная награда</button></div>
+      <div class="card"><div class="sub">Рулетка раз в 24 часа: от 0 до 250 Fade Coins</div>
+      <button class="btn" onclick="spinRoulette()">🎰 Крутить рулетку</button></div>`);
+  },
+  async friends(){
+    feat('Друзья');
+    featBody(`<div class="card"><label>Ник или Game ID</label><input id="f-q" placeholder="Ник или ID" maxlength="64"/>
+      <button class="btn" onclick="friendAdd()">Добавить в друзья</button></div><div id="f-list"></div>`);
+    await friendsLoad();
+  },
+  async party(){
+    feat('Пати');
+    featBody(`<div class="card"><label>Ник или Game ID игрока</label><input id="p-q" placeholder="Ник или ID" maxlength="64"/>
+      <button class="btn" onclick="partyInvite()">Пригласить в пати</button></div><div id="p-list"></div>`);
+    await partyLoad();
+  },
+  async clan(){
+    feat('Клан');
+    const r=await api('/api/clan/mine');
+    if(r.clan){
+      featBody(`<div class="card"><div style="font-weight:900;font-size:16px">[${esc(r.clan.tag)}] ${esc(r.clan.name)}</div>
+        <div class="sub">${esc(r.clan.description)}</div>
+        <div>ELO клана: <b>${esc(r.clan.elo)}</b> · Участников: <b>${esc(r.clan.members_count)}</b></div>
+        <button class="btn ghost" style="margin-top:10px" onclick="clanLeave()">Выйти из клана</button></div>`);
+      return;
+    }
+    const list=await api('/api/clans');
+    featBody(`<div class="card"><div class="sub">Создать клан — 500 Fade Coins</div>
+      <input id="c-name" placeholder="Название (латиница)" maxlength="24"/>
+      <input id="c-tag" placeholder="Тег (2–5 символов)" maxlength="5"/>
+      <input id="c-desc" placeholder="Описание" maxlength="200"/>
+      <button class="btn" onclick="clanCreate()">Создать клан</button></div>
+      <div class="section">Кланы</div>
+      ${list.clans.length? list.clans.map(c=>`<div class="card"><div><b>[${esc(c.tag)}] ${esc(c.name)}</b> · ELO ${esc(c.elo)} · ${esc(c.members)}/30</div>
+        <div class="sub">${esc(c.description)}</div><button class="btn sm" onclick="clanJoin(${Number(c.id)})">Вступить</button></div>`).join('') : '<div class="sub">Пока нет кланов</div>'}`);
+  },
+  async cases(){
+    feat('Кейсы');
+    featBody(`<div class="card"><div class="sub">Открытие кейса — 100 Fade Coins. Выпадают рамки, баннеры, буст и монеты.</div>
+      <button class="btn" onclick="openCase()">📦 Открыть кейс (100 ⚡)</button>
+      <div id="case-out" style="margin-top:10px"></div></div>`);
+  },
+  async inventory(){
+    feat('Инвентарь');
+    const r=await api('/api/inventory');
+    const items=r.items||[];
+    featBody(`<div class="card"><div>Рамка: <b>${esc(r.frame_id)}</b> · Баннер: <b>${esc(r.banner_id)}</b></div>
+      <div class="sub">Нажми на предмет, чтобы надеть</div></div>
+      ${items.length? items.map(i=>`<div class="card"><div><b>${esc(i.name)}</b> · ${esc(i.rarity||'')}</div>
+        <button class="btn sm" onclick="equipItem('${esc(i.type)}','${esc(i.id)}')">Надеть</button></div>`).join('') : '<div class="sub">Инвентарь пуст. Открой кейс.</div>'}`);
+  },
+  async achievements(){
+    feat('Достижения');
+    const r=await api('/api/achievements');
+    featBody(`<div class="sub">Получено: ${esc(r.done_count)} из ${esc(r.total)}</div>` +
+      r.achievements.map(a=>`<div class="card" style="opacity:${a.done?1:.5}"><div><b>${a.done?'✅':'🔒'} ${esc(a.title)}</b></div><div class="sub">${esc(a.desc)}</div></div>`).join(''));
+  },
+  async report(){
+    feat('Репорт');
+    featBody(`<div class="card"><label>Ник или Game ID нарушителя</label><input id="r-t" maxlength="64"/>
+      <label>Причина</label><input id="r-r" maxlength="300" placeholder="Что произошло"/>
+      <button class="btn" onclick="sendReport()">Отправить репорт модераторам</button></div>`);
+  },
+  async rules(){
+    feat('Правила');
+    featBody(`<div class="card"><ul style="padding-left:18px;line-height:1.6">
+      <li>Без читов и стороннего софта.</li>
+      <li>Не подтвердил матч — варн. 3 варна = мут на 1 час.</li>
+      <li>Неподтверждённый матч — мут 15 минут.</li>
+      <li>Оскорбления и слив матчей — бан по решению админов.</li></ul></div>`);
+  },
+};
+
+function openFeat(name){ FEATS[name]().catch(featErr); }
+
+async function friendsLoad(){
+  const box=document.getElementById('f-list'); if(!box) return;
+  const r=await api('/api/friends');
+  box.innerHTML = r.friends.length ? r.friends.map(f=>`<div class="card"><div><b>${esc(f.nickname)}</b> · ${esc(f.level_name)} · ELO ${esc(f.elo)}</div>
+    <div class="sub">ID ${esc(f.game_id)}</div><button class="btn ghost sm" onclick="friendRemove(${Number(f.telegram_id)})">Удалить</button></div>`).join('')
+    : '<div class="sub">Друзей пока нет</div>';
+}
+async function friendAdd(){ try{ const q=document.getElementById('f-q').value.trim(); if(!q) return; await api('/api/friends/add',{method:'POST',body:JSON.stringify({query:q})}); toast('Добавлен в друзья'); document.getElementById('f-q').value=''; await friendsLoad(); }catch(e){ featErr(e); } }
+async function friendRemove(id){ try{ await api('/api/friends/remove',{method:'POST',body:JSON.stringify({telegram_id:id})}); await friendsLoad(); }catch(e){ featErr(e); } }
+
+async function partyLoad(){
+  const box=document.getElementById('p-list'); if(!box) return;
+  const r=await api('/api/party');
+  if(!r.party){ box.innerHTML='<div class="sub">Ты не в пати. Пригласи игрока — пати создастся автоматически.</div>'; return; }
+  box.innerHTML = `<div class="sub">Участников: ${esc(r.party.members.length)}/${esc(r.party.max_size)}</div>` +
+    r.party.members.map(m=>`<div class="card"><b>${esc(m.nickname)}</b> · ${esc(m.level_name)} · ELO ${esc(m.elo)}</div>`).join('');
+}
+async function partyInvite(){ try{ const q=document.getElementById('p-q').value.trim(); if(!q) return; await api('/api/party/invite',{method:'POST',body:JSON.stringify({query:q})}); toast('Приглашён'); document.getElementById('p-q').value=''; await partyLoad(); }catch(e){ featErr(e); } }
+
+async function clanCreate(){ try{ await api('/api/clan/create',{method:'POST',body:JSON.stringify({name:document.getElementById('c-name').value.trim(),tag:document.getElementById('c-tag').value.trim(),description:document.getElementById('c-desc').value.trim()})}); toast('Клан создан'); FEATS.clan(); }catch(e){ featErr(e); } }
+async function clanJoin(id){ try{ await api('/api/clan/join',{method:'POST',body:JSON.stringify({clan_id:id})}); toast('Ты в клане'); FEATS.clan(); }catch(e){ featErr(e); } }
+async function clanLeave(){ try{ await api('/api/clan/leave',{method:'POST',body:'{}'}); toast('Ты вышел из клана'); FEATS.clan(); }catch(e){ featErr(e); } }
+
+async function openCase(){ try{ const r=await api('/api/case/open',{method:'POST',body:'{}'}); document.getElementById('case-out').innerHTML=`<div class="card">Выпало: <b>${esc(r.prize.name)}</b> · ${esc(r.prize.rarity||'')}</div>`; toast('Баланс: '+r.fade_coins); }catch(e){ featErr(e); } }
+async function spinRoulette(){ try{ const r=await api('/api/roulette',{method:'POST',body:'{}'}); toast(r.reward? ('+'+r.reward+' Fade Coins') : 'Пусто в этот раз'); }catch(e){ featErr(e); } }
+async function equipItem(kind,id){ try{ await api('/api/inventory/equip',{method:'POST',body:JSON.stringify({kind:kind,item_id:id})}); toast('Надето'); FEATS.inventory(); }catch(e){ featErr(e); } }
+async function sendReport(){ try{ const t=document.getElementById('r-t').value.trim(), r=document.getElementById('r-r').value.trim(); await api('/api/report',{method:'POST',body:JSON.stringify({target:t,reason:r})}); toast('Репорт отправлен'); }catch(e){ featErr(e); } }
 
 async function boot(){
   const online=await checkOnline();
@@ -458,7 +617,6 @@ async function boot(){
       go('profile');
     } else {
       goReg();
-      if(me.username) document.getElementById('reg-nick').value=me.username;
     }
   }catch(e){
     goReg();
