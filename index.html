@@ -7,128 +7,89 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>window.FADE_API='http://c17.play2go.cloud:20045';</script>
 <style>
-:root{
-  --bg:#0b0b10;--card:#14141c;--card2:#1c1c28;--line:#252533;
-  --accent:#e11d48;--accent2:#fb7185;--text:#f4f4f5;--muted:#71717a;
-  --ok:#22c55e;--warn:#eab308;--radius:14px;
-}
+:root{--bg:#0b0b10;--card:#14141c;--card2:#1c1c28;--line:#252533;--accent:#e11d48;--accent2:#fb7185;--text:#f4f4f5;--muted:#71717a;--ok:#22c55e;--radius:14px}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;background:var(--bg);color:var(--text);
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  font-size:14px;overflow-x:hidden}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:14px;overflow-x:hidden}
 body{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
-
 #online-bar{font-size:11px;font-weight:700;text-align:center;padding:6px 10px;position:sticky;top:0;z-index:50}
-#online-bar.ok{background:#14532d;color:#86efac}
-#online-bar.fail{background:#7f1d1d;color:#fecaca}
-#online-bar.wait{background:#1c1c28;color:var(--muted)}
-
-.topbar{display:flex;align-items:center;justify-content:space-between;
-  padding:10px 14px 8px;position:sticky;top:0;z-index:40;
-  background:rgba(11,11,16,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-.logo{font-weight:900;font-size:15px;letter-spacing:-.3px}
-.logo span{color:var(--accent)}
-.coins{background:var(--card2);border:1px solid var(--line);border-radius:999px;
-  padding:4px 10px;font-size:12px;font-weight:800;color:var(--accent2)}
-
-.page{display:none;padding:12px 12px 20px;animation:fade .22s ease}
-.page.active{display:block}
-@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-
+#online-bar.ok{background:#14532d;color:#86efac}#online-bar.fail{background:#7f1d1d;color:#fecaca}#online-bar.wait{background:#1c1c28;color:var(--muted)}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 8px;position:sticky;top:0;z-index:40;background:rgba(11,11,16,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.logo{font-weight:900;font-size:15px}.logo span{color:var(--accent)}
+.coins{background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:12px;font-weight:800;color:var(--accent2)}
+.page{display:none;padding:12px 12px 20px;animation:fade .2s ease}.page.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px;margin-bottom:10px}
-.section{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;
-  letter-spacing:.6px;margin:14px 0 8px}
-
-.btn{display:block;width:100%;border:none;border-radius:12px;padding:13px 16px;
-  font-size:14px;font-weight:800;cursor:pointer;background:var(--accent);color:#fff;
-  transition:transform .12s,opacity .12s}
-.btn:active{transform:scale(.98);opacity:.9}
-.btn.ghost{background:var(--card2);color:var(--text);border:1px solid var(--line)}
-.btn.sm{padding:8px 12px;font-size:12px;width:auto;display:inline-block}
-
-input,select,textarea{width:100%;background:var(--card2);border:1px solid var(--line);
-  border-radius:12px;padding:12px 14px;color:var(--text);font-size:14px;outline:none;margin-bottom:8px}
-input:focus{border-color:var(--accent)}
-label{display:block;font-size:12px;color:var(--muted);margin:0 0 4px}
-
-.tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.tab{flex:1;text-align:center;padding:8px 6px;border-radius:10px;font-size:11px;font-weight:800;
-  background:var(--card2);color:var(--muted);border:1px solid transparent;white-space:nowrap}
-.tab.on{background:rgba(225,29,72,.15);color:var(--accent2);border-color:rgba(225,29,72,.35)}
-
-.nav{position:fixed;left:0;right:0;bottom:0;z-index:60;
-  display:flex;background:rgba(11,11,16,.96);backdrop-filter:blur(16px);
-  border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));
-  height:calc(58px + env(safe-area-inset-bottom,0px))}
-.nav button{flex:1;background:none;border:none;color:var(--muted);font-size:10px;font-weight:700;
-  display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px;cursor:pointer}
-.nav button.on{color:var(--accent2)}
-.nav .ico{font-size:18px;line-height:1}
-
+.section{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:14px 0 8px}
+.btn{display:block;width:100%;border:none;border-radius:12px;padding:13px 16px;font-size:14px;font-weight:800;cursor:pointer;background:var(--accent);color:#fff}
+.btn:active{opacity:.9}.btn.ghost{background:var(--card2);color:var(--text);border:1px solid var(--line)}.btn.sm{padding:8px 12px;font-size:12px;width:auto;display:inline-block}
+input,select{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--text);font-size:14px;outline:none;margin-bottom:8px}
+input:focus{border-color:var(--accent)}label{display:block;font-size:12px;color:var(--muted);margin:0 0 4px}
+.tabs{display:flex;gap:6px;margin-bottom:12px}.tab{flex:1;text-align:center;padding:8px;border-radius:10px;font-size:11px;font-weight:800;background:var(--card2);color:var(--muted)}
+.tab.on{background:rgba(225,29,72,.15);color:var(--accent2)}
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;background:rgba(11,11,16,.96);backdrop-filter:blur(16px);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));height:calc(58px + env(safe-area-inset-bottom,0px))}
+.nav button{flex:1;background:none;border:none;color:var(--muted);font-size:10px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px}
+.nav button.on{color:var(--accent2)}.nav .ico{font-size:18px}
 .profile-head{display:flex;gap:12px;align-items:center}
-.av{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--accent),#7f1d1d);
-  display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;
-  border:2px solid var(--line);position:relative;overflow:hidden}
+.av{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--accent),#7f1d1d);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;border:2px solid var(--line);position:relative}
 .av img.lvl{position:absolute;right:-4px;bottom:-4px;width:22px;height:22px}
 .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
-.stat{background:var(--card2);border-radius:12px;padding:10px 6px;text-align:center}
-.stat b{display:block;font-size:16px;font-weight:900}
-.stat span{font-size:10px;color:var(--muted)}
-
-.rank-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}
-.rank-item:last-child{border:none}
+.stat{background:var(--card2);border-radius:12px;padding:10px 6px;text-align:center}.stat b{display:block;font-size:16px;font-weight:900}.stat span{font-size:10px;color:var(--muted)}
+.rank-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}.rank-item:last-child{border:none}
 .rank-pos{width:22px;font-weight:900;font-size:12px;color:var(--muted);text-align:center}
-.rank-av{width:32px;height:32px;border-radius:10px;background:var(--card2);
-  display:flex;align-items:center;justify-content:center;font-weight:800;border:1px solid var(--line)}
+.rank-av{width:32px;height:32px;border-radius:10px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-weight:800;border:1px solid var(--line)}
 .lvl-img-sm{width:20px;height:20px}
-
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .map-card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .map-card img{width:100%;height:64px;object-fit:cover;background:#111;display:block}
 .map-card .info{padding:8px;font-size:12px;font-weight:700}
-
-.menu-item{display:flex;align-items:center;gap:10px;padding:12px;background:var(--card);
-  border:1px solid var(--line);border-radius:12px;margin-bottom:8px;cursor:pointer}
-.menu-item .ico{width:36px;height:36px;border-radius:10px;background:var(--card2);
-  display:flex;align-items:center;justify-content:center;font-size:16px}
+.menu-item{display:flex;align-items:center;gap:10px;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:8px}
+.menu-item .ico{width:36px;height:36px;border-radius:10px;background:var(--card2);display:flex;align-items:center;justify-content:center}
 .menu-item .arrow{margin-left:auto;color:var(--muted)}
-
-.pslot{width:100%;aspect-ratio:1;border-radius:12px;background:var(--card2);border:1px dashed var(--line);
-  display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--muted);position:relative;font-size:14px}
+.pslot{aspect-ratio:1;border-radius:12px;background:var(--card2);border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--muted);position:relative;font-size:14px}
 .pslot.filled{background:linear-gradient(135deg,#1c1c28,#3f0a14);border-style:solid;color:#fff}
 .pslot .lvl{position:absolute;right:2px;bottom:2px;width:16px;height:16px}
 .slots{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:12px 0}
-
-.toast{position:fixed;left:50%;bottom:78px;transform:translateX(-50%) translateY(20px);
-  background:#fff;color:#000;padding:10px 16px;border-radius:12px;font-weight:800;font-size:13px;
-  opacity:0;pointer-events:none;transition:.25s;z-index:100;max-width:90%}
+.toast{position:fixed;left:50%;bottom:78px;transform:translateX(-50%) translateY(20px);background:#fff;color:#000;padding:10px 16px;border-radius:12px;font-weight:800;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:100;max-width:90%}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .err{color:var(--accent2);font-size:12px;margin:6px 0;min-height:16px}
 .loading{text-align:center;color:var(--muted);padding:20px}
 .league-badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800;background:var(--accent);color:#fff}
-.hidden{display:none!important}
-h1{font-size:20px;font-weight:900;margin-bottom:6px}
+.hidden{display:none!important}h1{font-size:20px;font-weight:900;margin-bottom:6px}
 .sub{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.4}
+.ch-list{margin:12px 0}.ch-item{display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--card2);border-radius:12px;margin-bottom:8px;border:1px solid var(--line)}
+.ch-item a{color:var(--accent2);font-weight:800;text-decoration:none;font-size:13px}
+.preview{width:100%;max-height:160px;object-fit:contain;border-radius:12px;background:#000;margin:8px 0;display:none}
+.nav.locked{pointer-events:none;opacity:.35}
 </style>
 </head>
 <body>
-<div id="online-bar" class="wait">Проверка сервера...</div>
+<div id="online-bar" class="wait">Проверка...</div>
 <div class="topbar">
   <div class="logo">FADE <span>FACEIT</span></div>
   <div class="coins" id="coins">⚡ 0</div>
 </div>
 
-<!-- REG -->
+<!-- SUBSCRIPTION -->
+<div class="page" id="p-sub">
+  <h1>Подписка</h1>
+  <p class="sub">Подпишись на каналы Fade Faceit, затем нажми «Проверить».</p>
+  <div class="ch-list" id="ch-list"><div class="loading">Загрузка каналов...</div></div>
+  <div class="err" id="sub-err"></div>
+  <button class="btn" onclick="checkSubs(true)">Я подписался — проверить</button>
+</div>
+
+<!-- REGISTRATION (screenshot first) -->
 <div class="page" id="p-reg">
   <h1>Регистрация</h1>
-  <p class="sub">Ник и Game ID из <b>StandFade</b>. После регистрации — 10 матчей калибровки.</p>
+  <p class="sub">Сначала <b>скриншот профиля StandFade</b>, потом ник и Game ID. После этого — калибровка 0/10.</p>
   <div class="err" id="reg-err"></div>
-  <label>Ник</label>
-  <input id="reg-nick" placeholder="Ваш ник" maxlength="24" autocomplete="off"/>
-  <label>Game ID (латиница и цифры)</label>
+  <label>1. Скриншот профиля StandFade *</label>
+  <input type="file" id="reg-photo" accept="image/*" capture="environment" onchange="previewPhoto(this)"/>
+  <img id="photo-preview" class="preview" alt="preview"/>
+  <label>2. Ник *</label>
+  <input id="reg-nick" placeholder="Ник из StandFade" maxlength="24" autocomplete="off"/>
+  <label>3. Game ID (латиница / цифры) *</label>
   <input id="reg-id" placeholder="abc123 или 12345" maxlength="32" autocomplete="off"/>
-  <label>Скриншот профиля StandFade (необязательно)</label>
-  <input type="file" id="reg-photo" accept="image/*"/>
   <button class="btn" style="margin-top:8px" onclick="doRegister()">Зарегистрироваться</button>
 </div>
 
@@ -136,7 +97,7 @@ h1{font-size:20px;font-weight:900;margin-bottom:6px}
 <div class="page" id="p-profile">
   <div class="card">
     <div class="profile-head">
-      <div class="av" id="av">?<img class="lvl" id="lvl-img" src="levels/0.svg" alt=""/></div>
+      <div class="av" id="av">?<img class="lvl" id="lvl-img" src="" alt=""/></div>
       <div style="flex:1;min-width:0">
         <div style="font-weight:900;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="nick">—</div>
         <div style="font-size:12px;color:var(--muted)" id="gid">ID —</div>
@@ -151,22 +112,18 @@ h1{font-size:20px;font-weight:900;margin-bottom:6px}
   </div>
   <div class="section">Лига</div>
   <div class="card" style="display:flex;justify-content:space-between;align-items:center">
-    <div>
-      <div style="font-size:11px;color:var(--muted)">Текущая</div>
-      <div style="font-weight:900" id="league-name">DEFAULT</div>
-    </div>
+    <div><div style="font-size:11px;color:var(--muted)">Текущая</div><div style="font-weight:900" id="league-name">DEFAULT</div></div>
     <span class="league-badge" id="league-badge">—</span>
   </div>
-  <div class="section">Карты</div>
+  <div class="section">Карты StandFade</div>
   <div class="grid2" id="maps-grid"></div>
-  <div class="section">Последние матчи</div>
+  <div class="section">Матчи</div>
   <div class="card" id="match-list"><div class="loading">Пока пусто</div></div>
 </div>
 
-<!-- PLAY -->
 <div class="page" id="p-play">
   <h1>Играть</h1>
-  <p class="sub">5v5 · StandFade · умный баланс по ELO</p>
+  <p class="sub">5v5 · StandFade · баланс по ELO</p>
   <div class="tabs">
     <div class="tab on" onclick="setLeague(this,'default')">DEFAULT</div>
     <div class="tab" onclick="setLeague(this,'qualification')">QUAL</div>
@@ -176,18 +133,15 @@ h1{font-size:20px;font-weight:900;margin-bottom:6px}
   <button class="btn" style="margin-top:8px" onclick="joinLobby(1)">Найти игру</button>
 </div>
 
-<!-- LOBBY -->
 <div class="page" id="p-lobby">
   <h1 id="lobby-title">Лобби</h1>
   <p class="sub">Игроков: <span id="lobby-n">0/10</span></p>
   <div class="slots" id="slots"></div>
-  <button class="btn ghost" onclick="leaveQueue()">Выйти из очереди</button>
+  <button class="btn ghost" onclick="leaveQueue()">Выйти</button>
 </div>
 
-<!-- TOP -->
 <div class="page" id="p-top">
   <h1>Рейтинг</h1>
-  <p class="sub">Онлайн · по ELO</p>
   <div class="tabs">
     <div class="tab on" onclick="loadTopLeague(this,'default')">DEFAULT</div>
     <div class="tab" onclick="loadTopLeague(this,'qualification')">QUAL</div>
@@ -196,42 +150,27 @@ h1{font-size:20px;font-weight:900;margin-bottom:6px}
   <div class="card" id="top-list"><div class="loading">Загрузка...</div></div>
 </div>
 
-<!-- SHOP -->
 <div class="page" id="p-shop">
   <h1>Магазин</h1>
-  <p class="sub">Fade Coins · рамки, баннеры, премиум</p>
   <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div><b>Gold Frame</b><div style="font-size:11px;color:var(--muted)">Рамка в топе</div></div>
-      <button class="btn sm" onclick="buy('Gold Frame',200)">200⚡</button>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div><b>Red Banner</b><div style="font-size:11px;color:var(--muted)">Баннер профиля</div></div>
-      <button class="btn sm" onclick="buy('Red Banner',150)">150⚡</button>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <div><b>Premium 30д</b><div style="font-size:11px;color:var(--muted)">Пати 3 · бонусы</div></div>
-      <button class="btn sm" onclick="buy('Premium',500)">500⚡</button>
-    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div><b>Gold Frame</b></div><button class="btn sm" onclick="buy('Gold Frame',200)">200⚡</button></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div><b>Red Banner</b></div><button class="btn sm" onclick="buy('Red Banner',150)">150⚡</button></div>
+    <div style="display:flex;justify-content:space-between;align-items:center"><div><b>Premium 30д</b></div><button class="btn sm" onclick="buy('Premium',500)">500⚡</button></div>
   </div>
-  <div class="section">Ежедневно</div>
-  <button class="btn" onclick="claimDaily()">Забрать награду</button>
+  <button class="btn" onclick="claimDaily()">Ежедневная награда</button>
 </div>
 
-<!-- MORE -->
 <div class="page" id="p-more">
   <h1>Ещё</h1>
-  <div class="menu-item" onclick="claimDaily()"><div class="ico">🎁</div><div><div style="font-weight:800">Ежедневка</div><div style="font-size:11px;color:var(--muted)">Стрик наград</div></div><span class="arrow">›</span></div>
-  <div class="menu-item" onclick="showSeason()"><div class="ico">👑</div><div><div style="font-weight:800">Сезон</div><div style="font-size:11px;color:var(--muted)">Призы и правила</div></div><span class="arrow">›</span></div>
-  <div class="menu-item" onclick="showMapsPage()"><div class="ico">🗺</div><div><div style="font-weight:800">Карты</div><div style="font-size:11px;color:var(--muted)">Sakura, Rust, Province...</div></div><span class="arrow">›</span></div>
+  <div class="menu-item" onclick="claimDaily()"><div class="ico">🎁</div><div><div style="font-weight:800">Ежедневка</div></div><span class="arrow">›</span></div>
+  <div class="menu-item" onclick="showSeason()"><div class="ico">👑</div><div><div style="font-weight:800">Сезон</div></div><span class="arrow">›</span></div>
   <div class="menu-item" onclick="promptPromo()"><div class="ico">%</div><div><div style="font-weight:800">Промокод</div></div><span class="arrow">›</span></div>
   <div class="menu-item" onclick="promptSearch()"><div class="ico">🔍</div><div><div style="font-weight:800">Найти игрока</div></div><span class="arrow">›</span></div>
-  <div class="menu-item" onclick="setLang()"><div class="ico">🌐</div><div><div style="font-weight:800">Язык</div><div style="font-size:11px;color:var(--muted)">RU / EN</div></div><span class="arrow">›</span></div>
-  <div class="menu-item" onclick="toast('Без читов · 3 варна = мут 1ч · респект')"><div class="ico">📜</div><div><div style="font-weight:800">Правила</div></div><span class="arrow">›</span></div>
+  <div class="menu-item" onclick="toast('Без читов · 3 варна = мут 1ч')"><div class="ico">📜</div><div><div style="font-weight:800">Правила</div></div><span class="arrow">›</span></div>
 </div>
 
-<nav class="nav">
-  <button class="on" data-p="profile" onclick="go('profile')"><span class="ico">👤</span>Профиль</button>
+<nav class="nav locked" id="main-nav">
+  <button data-p="profile" onclick="go('profile')"><span class="ico">👤</span>Профиль</button>
   <button data-p="play" onclick="go('play')"><span class="ico">▶</span>Играть</button>
   <button data-p="top" onclick="go('top')"><span class="ico">🏆</span>Топ</button>
   <button data-p="shop" onclick="go('shop')"><span class="ico">🛒</span>Магазин</button>
@@ -240,173 +179,202 @@ h1{font-size:20px;font-weight:900;margin-bottom:6px}
 <div class="toast" id="toast"></div>
 
 <script>
-const DEFAULT_API = (location.hostname === 'c17.play2go.cloud' || location.port === '20045')
-  ? (location.protocol + '//' + location.host)
+const DEFAULT_API = (location.hostname==='c17.play2go.cloud'||location.port==='20045')
+  ? (location.protocol+'//'+location.host)
   : 'http://c17.play2go.cloud:20045';
-const API = (new URLSearchParams(location.search).get('api') || localStorage.getItem('fade_api') || window.FADE_API || DEFAULT_API).replace(/\/$/,'');
-if (new URLSearchParams(location.search).get('api')) localStorage.setItem('fade_api', API);
+const API = (new URLSearchParams(location.search).get('api')||localStorage.getItem('fade_api')||window.FADE_API||DEFAULT_API).replace(/\/$/,'');
+if(new URLSearchParams(location.search).get('api')) localStorage.setItem('fade_api', API);
 
 const tg = window.Telegram && window.Telegram.WebApp;
-if (tg) { try { tg.ready(); tg.expand(); tg.setHeaderColor('#0b0b10'); tg.setBackgroundColor('#0b0b10'); } catch(e){} }
+if(tg){ try{ tg.ready(); tg.expand(); tg.setHeaderColor('#0b0b10'); tg.setBackgroundColor('#0b0b10'); }catch(e){} }
 
-const state = { user: null, league: 'default' };
+const state = { user:null, league:'default', subscribed:false, registered:false };
+const MAPS_FALLBACK = [
+  {id:'sakura',name:'Sakura'},{id:'sandstone',name:'SandStone'},
+  {id:'rust',name:'Rust'},{id:'province',name:'Province'},{id:'zone9',name:'Zone 9'}
+];
 
-function toast(m){
-  const el = document.getElementById('toast');
-  el.textContent = m;
-  el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'), 2400);
-}
-function lvlSrc(level){
-  const n = Math.max(0, Math.min(10, level|0));
-  return (API ? API + '/levels/' : 'levels/') + n + '.svg';
-}
-function mapImg(id){ return (API ? API + '/maps/' : 'maps/') + id + '.webp'; }
+function toast(m){ const el=document.getElementById('toast'); el.textContent=m; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2500); }
+function lvlSrc(n){ n=Math.max(0,Math.min(10,n|0)); return API+'/levels/'+n+'.svg'; }
+function mapSrc(id){ return API+'/maps/'+id+'.webp'; }
 
 async function api(path, opts={}){
-  if(!API) throw new Error('API не задан');
   const headers = Object.assign({'Content-Type':'application/json'}, opts.headers||{});
   try{
-    if(tg && tg.initData){
-      headers['Authorization'] = 'tma ' + tg.initData;
-      headers['X-Telegram-Init-Data'] = tg.initData;
-    }
+    if(tg && tg.initData){ headers['Authorization']='tma '+tg.initData; headers['X-Telegram-Init-Data']=tg.initData; }
   }catch(e){}
   let r;
   try{
-    r = await fetch(API + path, Object.assign({}, opts, {headers}));
+    r = await fetch(API+path, Object.assign({}, opts, {headers}));
   }catch(e){
-    throw new Error('Сервер недоступен (' + API.replace(/^https?:\/\//,'') + ')');
+    throw new Error('Сервер недоступен. Открой мини-апп с http://c17.play2go.cloud:20045/');
   }
   if(!r.ok){
-    let t = await r.text();
+    let t=await r.text();
     try{ const j=JSON.parse(t); t=j.detail||j.message||t; }catch(e){}
-    throw new Error(t || ('HTTP '+r.status));
+    if(typeof t!=='string') t=JSON.stringify(t);
+    throw new Error(t||('Ошибка '+r.status));
   }
   return r.json();
 }
 
 async function checkOnline(){
-  const bar = document.getElementById('online-bar');
+  const bar=document.getElementById('online-bar');
   try{
-    const ctrl = new AbortController();
-    const t = setTimeout(()=>ctrl.abort(), 5000);
-    const r = await fetch(API + '/api/health', {signal: ctrl.signal});
+    const ctrl=new AbortController();
+    const t=setTimeout(()=>ctrl.abort(),6000);
+    const r=await fetch(API+'/api/health',{signal:ctrl.signal});
     clearTimeout(t);
     if(!r.ok) throw new Error();
-    bar.className = 'ok';
-    bar.textContent = 'Онлайн · ' + API.replace(/^https?:\/\//,'');
+    const j=await r.json();
+    bar.className='ok';
+    bar.textContent='Онлайн · '+(j.port||20045);
     return true;
   }catch(e){
-    bar.className = 'fail';
-    bar.textContent = 'Оффлайн · нужен PORT=20045 на VPS';
+    bar.className='fail';
+    bar.textContent='Оффлайн · '+API.replace(/^https?:\/\//,'');
     return false;
   }
 }
 
+function unlockApp(){
+  document.getElementById('main-nav').classList.remove('locked');
+  state.registered=true;
+}
+
 function go(name){
+  if(!state.registered && name!=='reg' && name!=='sub'){ toast('Сначала регистрация'); return; }
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  const page = document.getElementById('p-'+name);
+  const page=document.getElementById('p-'+name);
   if(page) page.classList.add('active');
-  document.querySelectorAll('.nav button').forEach(b=>{
-    b.classList.toggle('on', b.getAttribute('data-p')===name);
-  });
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('on', b.getAttribute('data-p')===name));
   if(name==='top') loadTopLeague(null,'default');
   if(name==='play') loadLobbies();
-  if(name==='profile' && state.user) renderUser(state.user);
+  if(name==='profile'&&state.user) renderUser(state.user);
+}
+
+function previewPhoto(input){
+  const img=document.getElementById('photo-preview');
+  if(input.files&&input.files[0]){
+    img.src=URL.createObjectURL(input.files[0]);
+    img.style.display='block';
+  }
+}
+
+async function checkSubs(manual){
+  const err=document.getElementById('sub-err');
+  err.textContent='';
+  try{
+    const r=await api('/api/subscription/check');
+    const box=document.getElementById('ch-list');
+    const missing=r.missing||[];
+    const all=r.channels||[];
+    if(all.length){
+      box.innerHTML=all.map(ch=>{
+        const miss=missing.find(m=>m.id===ch.id);
+        const link=ch.link||('https://t.me/'+String(ch.id||'').replace('@',''));
+        return `<div class="ch-item"><div><b>${ch.name||ch.id}</b><div style="font-size:11px;color:var(--muted)">${miss?'Не подписан':'Подписан ✓'}</div></div><a href="${link}" target="_blank" rel="noopener">Открыть</a></div>`;
+      }).join('');
+    }
+    if(r.subscribed){
+      state.subscribed=true;
+      toast('Подписка ок');
+      goReg();
+      return true;
+    }
+    if(manual) err.textContent='Подпишись на все каналы и нажми снова';
+    return false;
+  }catch(e){
+    err.textContent=e.message;
+    // show channels from config fallback links
+    document.getElementById('ch-list').innerHTML=`
+      <div class="ch-item"><div><b>Fade Faceit</b></div><a href="https://t.me/fade_faceit" target="_blank">Открыть</a></div>`;
+    return false;
+  }
+}
+
+function goReg(){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('p-reg').classList.add('active');
 }
 
 function renderUser(u){
-  state.user = u;
-  document.getElementById('coins').textContent = '⚡ ' + (u.fade_coins||0);
-  document.getElementById('nick').textContent = u.nickname||'—';
-  document.getElementById('gid').textContent = 'ID ' + (u.game_id||'—');
-  document.getElementById('av').childNodes[0].textContent = (u.nickname||'?')[0].toUpperCase();
-  const lvl = u.calibrating ? 0 : (u.level||0);
-  document.getElementById('lvl-img').src = lvlSrc(lvl);
-  if(u.calibrating){
-    document.getElementById('elo-line').textContent = 'Калибровка ' + (u.calib_matches||0) + '/10';
-  } else {
-    document.getElementById('elo-line').textContent = (u.elo||1000) + ' ELO · LVL ' + lvl;
-  }
-  document.getElementById('s-kd').textContent = (u.kd||0).toFixed ? (u.kd||0).toFixed(2) : (u.kd||0);
+  state.user=u;
+  document.getElementById('coins').textContent='⚡ '+(u.fade_coins||0);
+  document.getElementById('nick').textContent=u.nickname||'—';
+  document.getElementById('gid').textContent='ID '+(u.game_id||'—');
+  document.getElementById('av').childNodes[0].textContent=(u.nickname||'?')[0].toUpperCase();
+  const lvl=u.calibrating?0:(u.level||0);
+  document.getElementById('lvl-img').src=lvlSrc(lvl);
+  document.getElementById('elo-line').textContent=u.calibrating?('Калибровка '+(u.calib_matches||0)+'/10'):((u.elo||1000)+' ELO · LVL '+lvl);
+  document.getElementById('s-kd').textContent=Number(u.kd||0).toFixed(2);
   const w=u.wins||0,l=u.losses||0,t=w+l;
-  document.getElementById('s-wr').textContent = (t?Math.round(100*w/t):0)+'%';
-  document.getElementById('s-m').textContent = u.matches_played||0;
-  const lg = u.league||'none';
-  const names = {none:'DEFAULT', qualification:'QUALIFICATION', fpl:'FPL'};
-  document.getElementById('league-name').textContent = names[lg]||String(lg).toUpperCase();
-  document.getElementById('league-badge').textContent = lg==='none'?'—':String(lg).toUpperCase();
+  document.getElementById('s-wr').textContent=(t?Math.round(100*w/t):0)+'%';
+  document.getElementById('s-m').textContent=u.matches_played||0;
+  const lg=u.league||'none';
+  const names={none:'DEFAULT',qualification:'QUALIFICATION',fpl:'FPL'};
+  document.getElementById('league-name').textContent=names[lg]||String(lg).toUpperCase();
+  document.getElementById('league-badge').textContent=lg==='none'?'—':String(lg).toUpperCase();
   loadMaps();
   loadMatches();
 }
 
-async function loadMaps(){
-  const box = document.getElementById('maps-grid');
+function loadMaps(){
+  const box=document.getElementById('maps-grid');
   if(!box) return;
-  const fallback = [
-    {id:'sakura',name:'Sakura'},{id:'sandstone',name:'SandStone'},
-    {id:'rust',name:'Rust'},{id:'province',name:'Province'},{id:'zone9',name:'Zone 9'}
-  ];
-  let maps = fallback;
-  try{ if(API){ const r=await api('/api/maps'); maps=r.maps||fallback; } }catch(e){}
-  box.innerHTML = maps.map(m=>`<div class="map-card"><img src="${mapImg(m.id)}" alt="${m.name}" onerror="this.style.background='#222'"/><div class="info">${m.name}</div></div>`).join('');
+  box.innerHTML=MAPS_FALLBACK.map(m=>`
+    <div class="map-card">
+      <img src="${mapSrc(m.id)}" alt="${m.name}" onerror="this.onerror=null;this.src='';this.style.background='#222';this.parentNode.querySelector('.info').textContent='${m.name}'"/>
+      <div class="info">${m.name}</div>
+    </div>`).join('');
 }
 
 async function loadMatches(){
-  const box = document.getElementById('match-list');
+  const box=document.getElementById('match-list');
   try{
-    const r = await api('/api/matches');
-    const list = r.matches||[];
+    const r=await api('/api/matches');
+    const list=r.matches||[];
     if(!list.length){ box.innerHTML='<div class="loading">Пока нет матчей</div>'; return; }
-    box.innerHTML = list.slice(0,8).map(m=>{
-      const ch = m.elo_change||0;
+    box.innerHTML=list.slice(0,8).map(m=>{
+      const ch=m.elo_change||0;
       return `<div class="rank-item"><div style="flex:1"><b>${m.map||'карта'}</b><div style="font-size:11px;color:var(--muted)">${m.kills||0}/${m.deaths||0}</div></div><div style="font-weight:900;color:${ch>=0?'var(--ok)':'var(--accent)'}">${ch>=0?'+':''}${ch}</div></div>`;
     }).join('');
   }catch(e){ box.innerHTML='<div class="loading">—</div>'; }
 }
 
 async function loadLobbies(){
-  const box = document.getElementById('lobby-list');
+  const box=document.getElementById('lobby-list');
   try{
-    const r = await api('/api/lobbies');
-    box.innerHTML = (r.lobbies||[]).map(L=>`
+    const r=await api('/api/lobbies');
+    box.innerHTML=(r.lobbies||[]).map(L=>`
       <div class="card" style="display:flex;justify-content:space-between;align-items:center">
-        <div><b>${L.name}</b><div style="font-size:11px;color:var(--muted)">${L.players}/${L.max} · ~${L.avg_elo} ELO</div></div>
+        <div><b>${L.name}</b><div style="font-size:11px;color:var(--muted)">${L.players}/${L.max}</div></div>
         <button class="btn sm" onclick="joinLobby(${L.id})">Войти</button>
-      </div>`).join('') || '<div class="card loading">Нет лобби</div>';
-  }catch(e){
-    box.innerHTML = `<div class="card"><button class="btn" onclick="joinLobby(1)">Найти игру</button></div>`;
-  }
+      </div>`).join('')||'';
+  }catch(e){ box.innerHTML=''; }
 }
 
-function setLeague(el, league){
-  state.league = league;
-  document.querySelectorAll('#p-play .tab').forEach(t=>t.classList.remove('on'));
-  if(el) el.classList.add('on');
-}
+function setLeague(el,league){ state.league=league; document.querySelectorAll('#p-play .tab').forEach(t=>t.classList.remove('on')); if(el) el.classList.add('on'); }
 
 async function joinLobby(id){
   try{
-    if(API) await api('/api/queue/join',{method:'POST'});
-    document.getElementById('lobby-title').textContent = 'ЛОББИ #'+id;
+    await api('/api/queue/join',{method:'POST'});
+    document.getElementById('lobby-title').textContent='ЛОББИ #'+id;
     go('lobby'); toast('В очереди');
     await refreshLobby();
     if(window._lobbyPoll) clearInterval(window._lobbyPoll);
-    window._lobbyPoll = setInterval(refreshLobby, 3000);
+    window._lobbyPoll=setInterval(refreshLobby,3000);
   }catch(e){ toast(e.message); }
 }
 async function refreshLobby(){
   try{
-    const st = await api('/api/queue/status');
-    document.getElementById('lobby-n').textContent = (st.queue_size||0)+'/10';
-    const players = st.players||[];
+    const st=await api('/api/queue/status');
+    document.getElementById('lobby-n').textContent=(st.queue_size||0)+'/10';
+    const players=st.players||[];
     let h='';
     for(let i=0;i<10;i++){
-      if(players[i]){
-        const p=players[i];
-        h+=`<div class="pslot filled">${(p.nickname||'?')[0]}<img class="lvl" src="${lvlSrc(p.level)}"/></div>`;
-      } else h+='<div class="pslot">+</div>';
+      if(players[i]) h+=`<div class="pslot filled">${(players[i].nickname||'?')[0]}<img class="lvl" src="${lvlSrc(players[i].level)}"/></div>`;
+      else h+='<div class="pslot">+</div>';
     }
     document.getElementById('slots').innerHTML=h;
   }catch(e){}
@@ -414,84 +382,88 @@ async function refreshLobby(){
 async function leaveQueue(){
   try{ await api('/api/queue/leave',{method:'POST'}); }catch(e){}
   if(window._lobbyPoll) clearInterval(window._lobbyPoll);
-  go('play'); toast('Вышел');
+  go('play');
 }
 
-async function loadTopLeague(el, league){
+async function loadTopLeague(el,league){
   if(el){ document.querySelectorAll('#p-top .tab').forEach(t=>t.classList.remove('on')); el.classList.add('on'); }
   const box=document.getElementById('top-list');
   box.innerHTML='<div class="loading">Загрузка...</div>';
   try{
-    const path = league==='default'?'/api/top':'/api/top/'+league;
-    const r = await api(path);
+    const path=league==='default'?'/api/top':'/api/top/'+league;
+    const r=await api(path);
     const players=r.players||[];
     if(!players.length){ box.innerHTML='<div class="loading">Пока пусто</div>'; return; }
-    box.innerHTML=players.map((p,i)=>`
+    box.innerHTML=players.map(p=>`
       <div class="rank-item">
         <div class="rank-pos">${p.rank}</div>
         <div class="rank-av">${(p.nickname||'?')[0]}</div>
-        <img src="${lvlSrc(p.level||0)}" class="lvl-img-sm"/>
-        <div style="flex:1;min-width:0"><div style="font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.nickname}${p.calibrating?' · калиб':''}</div>
+        <img src="${lvlSrc(p.level||0)}" class="lvl-img-sm" onerror="this.style.display='none'"/>
+        <div style="flex:1;min-width:0"><div style="font-weight:800;font-size:13px">${p.nickname}${p.calibrating?' · калиб':''}</div>
         <div style="font-size:11px;color:var(--muted)">${p.matches_played||0} матчей</div></div>
         <div style="font-weight:900;color:var(--accent2)">${p.calibrating?(p.calib_matches||0)+'/10':p.elo}</div>
       </div>`).join('');
-  }catch(e){ box.innerHTML='<div class="loading">Ошибка загрузки</div>'; }
+  }catch(e){ box.innerHTML='<div class="loading">'+e.message+'</div>'; }
 }
 
-async function buy(item, price){
-  try{ const r=await api('/api/buy',{method:'POST',body:JSON.stringify({item,price})}); toast('Куплено · '+r.fade_coins+'⚡'); const me=await api('/api/me'); renderUser(me);}catch(e){toast(e.message)}
-}
-async function claimDaily(){
-  try{ const r=await api('/api/daily',{method:'POST'}); toast('+'+r.reward+'⚡ · стрик '+r.streak); const me=await api('/api/me'); renderUser(me);}catch(e){toast(e.message)}
-}
-async function showSeason(){ try{ const r=await api('/api/season'); toast('Сезон '+(r.season||1)); }catch(e){ toast('Сезон 1 · StandFade'); } }
-function showMapsPage(){ go('profile'); loadMaps(); toast('5 карт StandFade'); }
-async function promptPromo(){
-  const code=prompt('Промокод'); if(!code) return;
-  try{ const r=await api('/api/promo',{method:'POST',body:JSON.stringify({code})}); toast('+'+r.reward+'⚡'); renderUser(await api('/api/me')); }catch(e){toast(e.message)}
-}
-async function promptSearch(){
-  const q=prompt('Ник или Game ID'); if(!q) return;
-  try{ const p=await api('/api/player/'+encodeURIComponent(q)); toast(p.nickname+' · '+(p.calibrating?p.calib_matches+'/10':p.elo+' ELO')); }catch(e){toast(e.message)}
-}
-function setLang(){ toast('Язык: RU'); }
+async function buy(item,price){ try{ const r=await api('/api/buy',{method:'POST',body:JSON.stringify({item,price})}); toast('Ок · '+r.fade_coins+'⚡'); renderUser(await api('/api/me')); }catch(e){toast(e.message)} }
+async function claimDaily(){ try{ const r=await api('/api/daily',{method:'POST'}); toast('+'+r.reward+'⚡'); renderUser(await api('/api/me')); }catch(e){toast(e.message)} }
+async function showSeason(){ try{ const r=await api('/api/season'); toast('Сезон '+(r.season||1)); }catch(e){toast('Сезон 1')} }
+async function promptPromo(){ const code=prompt('Промокод'); if(!code) return; try{ const r=await api('/api/promo',{method:'POST',body:JSON.stringify({code})}); toast('+'+r.reward+'⚡'); renderUser(await api('/api/me')); }catch(e){toast(e.message)} }
+async function promptSearch(){ const q=prompt('Ник или ID'); if(!q) return; try{ const p=await api('/api/player/'+encodeURIComponent(q)); toast(p.nickname+' · '+(p.calibrating?p.calib_matches+'/10':p.elo)); }catch(e){toast(e.message)} }
 
 async function doRegister(){
   const nick=(document.getElementById('reg-nick').value||'').trim();
   const gid=(document.getElementById('reg-id').value||'').trim();
   const err=document.getElementById('reg-err');
+  const file=document.getElementById('reg-photo');
   err.textContent='';
+  if(!file.files||!file.files[0]){ err.textContent='Нужен скриншот профиля StandFade'; toast('Загрузи скриншот'); return; }
   if(nick.length<2){ err.textContent='Введи ник'; return; }
   if(!/^[A-Za-z0-9_-]{2,32}$/.test(gid)){ err.textContent='Game ID: латиница, цифры, _ -'; return; }
-  let photo_base64=null;
-  const f=document.getElementById('reg-photo');
-  if(f&&f.files&&f.files[0]){
-    photo_base64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f.files[0]);});
-  }
+  let photo_base64;
+  try{
+    photo_base64=await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file.files[0]); });
+  }catch(e){ err.textContent='Не удалось прочитать фото'; return; }
   try{
     toast('Регистрация...');
-    const path=photo_base64?'/api/register/photo':'/api/register';
-    const body=photo_base64?{nickname:nick,game_id:gid,photo_base64}:{nickname:nick,game_id:gid};
-    await api(path,{method:'POST',body:JSON.stringify(body)});
+    await api('/api/register/photo',{method:'POST',body:JSON.stringify({nickname:nick,game_id:gid,photo_base64})});
     toast('Готово! Калибровка 0/10');
-    const me=await api('/api/me'); renderUser(me); go('profile');
-  }catch(e){ err.textContent=e.message; toast(e.message); checkOnline(); }
+    const me=await api('/api/me');
+    unlockApp();
+    renderUser(me);
+    go('profile');
+  }catch(e){ err.textContent=e.message; toast(e.message); }
 }
 
 async function boot(){
-  await checkOnline();
+  const online=await checkOnline();
+  if(!online){
+    document.getElementById('p-sub').classList.add('active');
+    document.getElementById('sub-err').textContent='Сервер не отвечает. Запусти API на порту 20045.';
+    return;
+  }
+  // 1) subscription
+  const subOk=await checkSubs(false);
+  if(!subOk){
+    document.getElementById('p-sub').classList.add('active');
+    return;
+  }
+  // 2) me
   try{
     const me=await api('/api/me');
-    if(me.registered){ renderUser(me); go('profile'); }
-    else {
-      document.getElementById('p-reg').classList.add('active');
-      document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('on'));
+    if(me.registered){
+      unlockApp();
+      renderUser(me);
+      go('profile');
+    } else {
+      goReg();
       if(me.username) document.getElementById('reg-nick').value=me.username;
     }
   }catch(e){
-    document.getElementById('p-reg').classList.add('active');
+    goReg();
+    document.getElementById('reg-err').textContent=e.message;
   }
-  loadMaps();
 }
 boot();
 </script>
